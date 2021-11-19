@@ -1,0 +1,40 @@
+<div>
+	<label for="dlat">Departue lat</label><br />
+	<input type="text" id="dlat" name="dlat" /><br />
+
+	<label for="dlng">Departure lng</label><br />
+	<input type="text" id="dlng" name="dlng" /><br />
+
+	<label for="alat">Arrival lat</label><br />
+	<input type="text" id="alat" name="alat" /><br />
+
+	<label for="alng">Arrival lng</label><br />
+	<input type="text" id="alng" name="alng" /><br />
+
+	<button onclick="callTaxi()">Call taxi</button>
+</div>
+
+<script>
+	// example request: https://router.hereapi.com/v8/routes?transportMode=car&origin=52.5308,13.3847&destination=52.5264,13.3686&return=summary
+
+	function callTaxi() {
+		console.log('Call taxi!');
+
+		var dlat = document.getElementById('dlat').value;
+		var dlng = document.getElementById('dlng').value;
+		var alat = document.getElementById('alat').value;
+		var alng = document.getElementById('alng').value;
+
+		console.log(
+			'Example request --- transportMode=car&origin=' +
+				dlat +
+				',' +
+				dlng +
+				'&destination=' +
+				alat +
+				',' +
+				alng +
+				'&return=summary'
+		);
+	}
+</script>

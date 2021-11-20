@@ -1,21 +1,22 @@
 // For testing assign lat/lng pairs that we know work so we don't have to fill in the 'form'
-// Otherwise we get a 400 Malformed request, cause: 'Error while parsing request: \n\n\tInvalid location specification at ','\n\tInvalid waypoint at ','\n\tUnexpected input at ','\n\tInvalid value for parameter 'origin' at ',''.
-// The form should later be changed to work with address instead of lat/lng.
+// Otherwise we get a 400 Malformed request, cause: 'Error while parsing request: \n\n\tInvalid location specification at ','\n\tInvalid
+// waypoint at ','\n\tUnexpected input at ','\n\tInvalid value for parameter 'origin' at ',''. The form should later be changed to work with
+// address instead of lat/lng.
 
 // TUM coords
 var olat = 48.149803141861;
 var olng = 11.567860198670074;
 
 // UvA coords
-//var dlat = 52.35632784585438;
-//var dlng = 4.971252886117597;
+// var dlat = 52.35632784585438;
+// var dlng = 4.971252886117597;
 
-// Munich Airpoty coords
+// Munich Airport coords
 var dlat = 48.353144657793344;
 var dlng = 11.786160706625926;
 
 // For reference
-// Using HERE 
+// Using HERE
 // https://wego.here.com/directions/mix/Munich-Airport,-Terminalstra%C3%9Fe-West,-85356-Oberding:276u287h-33978e49adeb4b2fa026780cb8d88bef/Technische-Universit%C3%A4t-M%C3%BCnchen,-Arcisstra%C3%9Fe-21,-80333-Munich:276u281z-68ca4dc5f40c475e8f5d5793dcec32b9?map=48.25352,11.67727,12,normal
 // Using Google
 // https://www.google.com/maps/dir/Munich+Airport,+M%C3%BCnchen-Flughafen,+Germany/Technische+Universit%C3%A4t+M%C3%BCnchen,+Arcisstra%C3%9Fe+21,+80333+M%C3%BCnchen,+Germany/@48.2531166,11.5341618,11z/data=!3m1!4b1!4m14!4m13!1m5!1m1!1s0x479e13dfa898f107:0xcb3789d757b96c43!2m2!1d11.7862396!2d48.3527322!1m5!1m1!1s0x479e7261336d8c11:0x79a04d44dc5bf19d!2m2!1d11.5678602!2d48.14966!3e0
@@ -71,7 +72,7 @@ async function assignLowestPassengerWaitTimeCar() {
 		2. Find lowest TIME TO PASSENGER car =>
 			2.1. For each car calculate TIME TO PASSENGER as such:
 				2.1.1. FREE car = current car location to requested trip origin
-				2.1.2. BOOKED car = (current car location to current trip destination) + (current trip destination to requested trip origin) 
+				2.1.2. BOOKED car = (current car location to current trip destination) + (current trip destination to requested trip origin)
 				2.1.3. CHARGING/SERVICE car = TBD
 				2.1.4. Check car battery is enough as such:
 					2.1.4.1. Get base distance = distance a car can drive if charge is 100 (for now using FULL_CHARGE_TRAVEL_DISTANCE for all cars)
@@ -103,10 +104,7 @@ async function assignLowestPassengerWaitTimeCar() {
 		if (iterations >= 6) break;
 		iterations++;
 
-		var carToPassengerTrip = {
-			duration: 0,
-			distance: 0
-		};
+		var carToPassengerTrip = { duration: 0, distance: 0 };
 
 		// console.log("Car " + car.vehicleID + "status: " + car.status);
 		if (car.status === "FREE") {

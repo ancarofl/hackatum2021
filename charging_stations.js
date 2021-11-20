@@ -47,4 +47,4 @@ function getLocation(x0, y0, radius) {
 }
 
 
-getLocation(48, 11, 50);
+getLocation(48, 11, 500);

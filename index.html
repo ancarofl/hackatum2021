@@ -1,54 +1,67 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>SimUCity</title>
-		<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
-		<link rel="stylesheet" type="text/css" href="./styles.css" />
-		<script src="constants.js"></script>
-		<script src="maps.js"></script>
-	</head>
-	<body>
-		<div class="container">
-			<div class="sim-ui">
-				<div>
-					<h2>Kinda working buttons</h2>
 
-					<button onclick="assignLowestPassengerWaitTimeCar()">
-						Assign lowest passenger wait time car
-					</button>
-				</div>
+<head>
+	<title>SimUCity</title>
+	<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 
-				<div>
-					<h3>Test/WIP buttons and other things</h3>
+	<link rel="stylesheet" type="text/css" href="./styles.css" />
+	<script src="constants.js"></script>
+	<script src="maps.js"></script>
+</head>
 
-					<div>
-						<label for="olat">Departue lat</label><br />
-						<input type="text" id="olat" name="olat" /><br />
+<body>
+	<div class="container">
+		<div class="sim-ui">
+			<div>
+				<h2>Kinda working buttons</h2>
 
-						<label for="olng">Departure lng</label><br />
-						<input type="text" id="olng" name="olng" /><br />
-
-						<label for="dlat">Arrival lat</label><br />
-						<input type="text" id="dlat" name="dlat" /><br />
-
-						<label for="dlng">Arrival lng</label><br />
-						<input type="text" id="dlng" name="dlng" /><br />
-					</div>
-
-					<button onclick="callTaxi()">Call taxi</button>
-					<button onclick="getChargingStations()">Get charging station</button>
-				</div>
+				<button onclick="assignLowestPassengerWaitTimeCar()">
+					Assign lowest passenger wait time car
+				</button>
 			</div>
-			<div id="map"></div>
+
+			<div>
+				<h3>Test/WIP buttons and other things</h3>
+
+				<div>
+					<label for="olat">Departue lat</label><br />
+					<input type="text" id="olat" name="olat" /><br />
+
+					<label for="olng">Departure lng</label><br />
+					<input type="text" id="olng" name="olng" /><br />
+
+					<label for="dlat">Arrival lat</label><br />
+					<input type="text" id="dlat" name="dlat" /><br />
+
+					<label for="dlng">Arrival lng</label><br />
+					<input type="text" id="dlng" name="dlng" /><br />
+					
+					<label for="numSixtLocations">Number of Sixt Locations</label><br />
+					<input type="text" id="numSixtLocations" name="numSixtLocations" /><br />
+
+					<label for="numChargingStations">Number of charging stations</label><br />
+					<input type="text" id="numChargingStations" name="numChargingStations" /><br />
+					
+					<label for="noOfCars">Number of cars</label><br />
+					<input type="noOfCars" id="dlng" name="noOfCars" /><br />
+				</div>
+
+				<button onclick="callTaxi()">Call taxi</button>
+				<button onclick="getChargingStations()">Get charging station</button>
+			</div>
 		</div>
+		<div id="map"></div>
+	</div>
 
-		<!-- Async script executes immediately and must be after any DOM elements used in callback. -->
-		<script
-			src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg&callback=initMap&v=weekly&channel=2"
-			async
-		></script>
-	</body>
+	<!-- Async script executes immediately and must be after any DOM elements used in callback. -->
+	<script
+		src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg&callback=initMap&v=weekly&channel=2"
+		async></script>
+</body>
 
-	<script src="apiKeys.js"></script>
-	<script src="index.js"></script>
+<script src="apiKeys.js"></script>
+<script src="index.js"></script>
+
 </html>

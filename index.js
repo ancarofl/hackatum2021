@@ -10,7 +10,7 @@ var olng = 11.567860198670074;
 //var dlat = 52.35632784585438;
 //var dlng = 4.971252886117597;
 
-// Munich Airpoty coords
+// Munich Airport coords
 var dlat = 48.353144657793344;
 var dlng = 11.786160706625926;
 

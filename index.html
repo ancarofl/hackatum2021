@@ -1,3 +1,12 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>SimUCity</title>
+	<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+	<link rel="stylesheet" type="text/css" href="./styles.css" />
+	<script src="maps.js"></script>
+</head>
+<body>
 <div>
 	<label for="olat">Departue lat</label><br />
 	<input type="text" id="olat" name="olat" /><br />
@@ -12,12 +21,36 @@
 	<input type="text" id="dlng" name="dlng" /><br />
 
 	<button onclick="callTaxi()">Call taxi</button>
+	<button onclick="getChargingStations()">getChargingStations</button>
 </div>
+<div id="map"></div>
+
+<!-- Async script executes immediately and must be after any DOM elements used in callback. -->
+<script
+	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg&callback=initMap&v=weekly&channel=2"
+	async
+></script>
+</body>
 
 <script src="apiKeys.js"></script>
 
 <script>
 	// example request: https://router.hereapi.com/v8/routes?transportMode=car&origin=52.5308,13.3847&destination=52.5264,13.3686&return=summary
+
+	const token = `eyJhbGciOiJSUzUxMiIsImN0eSI6IkpXVCIsImlzcyI6IkhFUkUiLCJhaWQiOiJjeDlCTVdCSFlHZnZpeVQyRnRsRiIsImlhdCI6MTYzNzM2MjU4OSwiZXhwIjoxNjM3NDQ4OTg5LCJraWQiOiJqMSJ9.ZXlKaGJHY2lPaUprYVhJaUxDSmxibU1pT2lKQk1qVTJRMEpETFVoVE5URXlJbjAuLm15cHdKdUhZUWtxXzAxOEk2NGEwZ3cuTE5FaXFOYklreEVCNC1aMDNPU1lySktJQlM4SnE4eWNYOTBzVzlLSzZZN25VWm5nc3hDYTliWVl1eGhnUzZFWnhxZlhSTFlWWktPT0o2QnpJU0FVa21sYnhTdzBkMlhzQTZTVWNIYzR1NXcxYXJWaEJyTDBoVV9McU8xMXppZ1JTLU9GTWZYbjVCTHdIWXZsQS1lRzVBLmw0ZXhrSEhQcFU0eU1lVGp3SEtlbVNydnc3TmhzT3ZLS3Vja0lXMmxFT28.RWuqupgiPV8ypJ9rfxz-_VXA6p6egQARJljrDhUYYJfMbn-KBWWQvhR3vmnlhJQ5QyKOcuUBFSyp4X2uYNkLJExPQ9zYop9kso3ynEAxzVwKwisqSls17fbCm4U4wdWWqsZp8AUu41myOCl02X6Pgto-7ReDS35qa8KGbp3IoiZefhEdr1_e83SENnqvvQ8EE4vA9K006b2S8gyFvGHWExQ4gLMbsc-9kXQHxi91pmM4RWT1IrIOqcHvAOy1TZsopm1dpjXvKt6E9zoyC3D-auGvFBEpBry53KSXhDWDqWcUsI4saS_JG1V1e6rknfRFI_TXR_GcwXqkFpKPXYV-7Q`
+
+	function getChargingStations() {
+		fetch('https://ev-v2.cit.cc.api.here.com/ev/stations.json?prox=52.516667,13.383333,5000&connectortype=31', {
+			method: 'GET',
+			headers: {
+				'Authorization': 'Bearer ' + token,
+				// 'Accept': 'application/json',
+				// 'Content-Type': 'application/json'
+			},
+		}).then((response) => response.json())
+			.then((data) => console.log(data));
+	}
+	
 
 	function callTaxi() {
 		console.log('Call taxi!');
@@ -29,14 +62,14 @@
 
 		console.log(
 			'Example request --- transportMode=car&origin=' +
-				olat +
-				',' +
-				olng +
-				'&destination=' +
-				dlat +
-				',' +
-				dlng +
-				'&return=summary'
+			olat +
+			',' +
+			olng +
+			'&destination=' +
+			dlat +
+			',' +
+			dlng +
+			'&return=summary'
 		);
 
 		// for now for testing purposes assign lat/lng pairs that we know work so we don't have to fill in the "form"
@@ -51,17 +84,18 @@
 
 		fetch(
 			'https://router.hereapi.com/v8/routes?transportMode=car&origin=' +
-				olat +
-				',' +
-				olng +
-				'&destination=' +
-				dlat +
-				',' +
-				dlng +
-				'&return=summary&apiKey=' +
-				HERE_API_KEY
+			olat +
+			',' +
+			olng +
+			'&destination=' +
+			dlat +
+			',' +
+			dlng +
+			'&return=summary&apiKey=' +
+			HERE_API_KEY
 		)
 			.then((response) => response.json())
 			.then((data) => console.log(data));
 	}
 </script>
+</html>

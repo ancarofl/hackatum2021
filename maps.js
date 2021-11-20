@@ -144,6 +144,8 @@ function generateFreeParkings(noOfFreeParkings)
 
 let pointsOfInterest = [];
 let pointsOfInterestMarkers = [];
+var cityCentreID;
+var airportID;
 function generatePointsOfInterest(noOfPointsOfInterest)
 {
 	const infoWindow = new google.maps.InfoWindow();
@@ -167,8 +169,8 @@ function generatePointsOfInterest(noOfPointsOfInterest)
 	});
 	markers.push(airportMarker);
 	pointsOfInterestMarkers.push(airportMarker);
-
-	// pointsOfInterest.push({lat : airportMarker.position.lat(), lng : airportMarker.position.lng()});
+	airportID = airportMarker.ID;
+	pointsOfInterest.push({lat : airportMarker.position.lat(), lng : airportMarker.position.lng(), ID: airportMarker.ID, bookings: []});
 
 	const cityCentreMarker = new google.maps.Marker({
 		position : {lat : MUNICH_CENTRE_LAT, lng : MUNICH_CENTRE_LNG},
@@ -188,10 +190,10 @@ function generatePointsOfInterest(noOfPointsOfInterest)
 		infoWindow.open(cityCentreMarker.getMap(), marker);
 	});
 	markers.push(cityCentreMarker);
+	cityCentreID = cityCentreMarker.ID;
 	pointsOfInterestMarkers.push(cityCentreMarker);
 
-	//TODO: maybe don't add city centrw and airport to the pointsOfInterest array
-	// pointsOfInterest.push({lat : cityCentreMarker.position.lat(), lng : cityCentreMarker.position.lng()});
+	pointsOfInterest.push({lat : cityCentreMarker.position.lat(), lng : cityCentreMarker.position.lng(), ID: cityCentreMarker.ID, bookings: []});
 
 	for (let i = 0; i < noOfPointsOfInterest; i++) {
 		const marker = new google.maps.Marker({

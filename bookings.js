@@ -59,32 +59,20 @@ function checkProximityOfBooking(oLat, oLng, bLat, bLng, radius)
 		   radius;
 }
 
-function checkProximityOfBookingToCityCentre(newBooking)
-{
-	if (checkProximityOfBooking(MUNICH_CENTRE_LAT, MUNICH_CENTRE_LNG, newBooking.lat, newBooking.lng, 1000)) {
-		console.log("booking close to city centre");
-	}
-}
-
-function checkProximityOfBookingToAirport(newBooking)
-{
-	if (checkProximityOfBooking(MUNICH_AIRPORT_LAT, MUNICH_AIRPORT_LNG, newBooking.lat, newBooking.lng, 1000)) {
-		console.log("booking close to airport");
-	}
-}
-
 function checkProximityOfBookingToOtherPointsOfInterest(newBooking)
 {
-	for(pointOfInterest of pointsOfInterest){
+	for (pointOfInterest of pointsOfInterest) {
 		if (checkProximityOfBooking(pointOfInterest.lat, pointOfInterest.lng, newBooking.lat, newBooking.lng, 1000)) {
+			if (pointOfInterest.ID == cityCentreID) { console.log("booking close to city centre"); }
+			if (pointOfInterest.ID == airportID) { console.log("booking close to airport"); }
+
 			console.log("booking close to ", pointOfInterest.ID);
 			pointOfInterest.bookings.push(newBooking);
 		}
 	}
+	console.log("pointsOfInterest: ", pointsOfInterest);
 }
 
-bookingsList.onBookingAdded.push((newBooking) => checkProximityOfBookingToCityCentre(newBooking));
-bookingsList.onBookingAdded.push((newBooking) => checkProximityOfBookingToAirport(newBooking));
 bookingsList.onBookingAdded.push((newBooking) => checkProximityOfBookingToOtherPointsOfInterest(newBooking));
 
 //! add this only if you need to get info about added bookings

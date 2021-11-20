@@ -338,7 +338,6 @@ async function startTrip(bookingId) {
 async function endTrip(bookingId) {
 	const response = await fetch("https://us-central1-sixt-hackatum-2021-orange.cloudfunctions.net/api/bookings/" + bookingId + "/passengerGotOff", {
 		method: "POST",
-		method: "POST",
 		headers: {
 			"Content-Type": "application/json"
 		}

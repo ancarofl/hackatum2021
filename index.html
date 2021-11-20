@@ -12,56 +12,12 @@
 	<input type="text" id="dlng" name="dlng" /><br />
 
 	<button onclick="callTaxi()">Call taxi</button>
+
+	<button onclick="assignLowestPassengerWaitTimeCar()">
+		Assign lowest passenger wait time car
+	</button>
 </div>
 
 <script src="apiKeys.js"></script>
-
-<script>
-	// example request: https://router.hereapi.com/v8/routes?transportMode=car&origin=52.5308,13.3847&destination=52.5264,13.3686&return=summary
-
-	function callTaxi() {
-		console.log('Call taxi!');
-
-		var olat = document.getElementById('olat').value;
-		var olng = document.getElementById('olng').value;
-		var dlat = document.getElementById('dlat').value;
-		var dlng = document.getElementById('dlng').value;
-
-		console.log(
-			'Example request --- transportMode=car&origin=' +
-				olat +
-				',' +
-				olng +
-				'&destination=' +
-				dlat +
-				',' +
-				dlng +
-				'&return=summary'
-		);
-
-		// for now for testing purposes assign lat/lng pairs that we know work so we don't have to fill in the "form"
-		// otherwise we get a 400 Malformed request with cause: "Error while parsing request: \n\n\tInvalid location specification at ','\n\tInvalid waypoint at ','\n\tUnexpected input at ','\n\tInvalid value for parameter 'origin' at ','"
-
-		// UvA
-		var olat = 48.187826244232056;
-		var olng = 11.533455049248525;
-		// TUM I think
-		var dlat = 48.149803141861;
-		var dlng = 11.567860198670074;
-
-		fetch(
-			'https://router.hereapi.com/v8/routes?transportMode=car&origin=' +
-				olat +
-				',' +
-				olng +
-				'&destination=' +
-				dlat +
-				',' +
-				dlng +
-				'&return=summary&apiKey=' +
-				HERE_API_KEY
-		)
-			.then((response) => response.json())
-			.then((data) => console.log(data));
-	}
-</script>
+<script src="constants.js"></script>
+<script src="index.js"></script>

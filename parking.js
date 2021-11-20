@@ -42,7 +42,6 @@ async function findParkingSpot(/* carID */)
 	}
 
 	// compute score to find best parking
-
 	parkings = freeParkings + sixtParkings + chargingStations; 
 
 	for (parking of parkings) {
@@ -59,13 +58,15 @@ async function findParkingSpot(/* carID */)
 
 	// 4. nearest Sixt parking
 
-	for (sixtParking of sixtParkings) {}
-
 	// 5. road side while trying to go to 3,4
 
 	/**
 	 * if battery is less than 20 we have to look for a charging station
 	 */
+}
+
+async function computeParkingPoIScore(parking){
+
 }
 
 async function getChargingStationInfos(car)

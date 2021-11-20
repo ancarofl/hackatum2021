@@ -5,6 +5,7 @@ class Bookings
 		this.BookingsList = [];
 		this.onBookingAdded = [];
 		this.onBookingsChanged = [];
+		setTimeout(removeOldBookingsFromPoI, 5000);
 	}
 
 	addBooking(newBooking)
@@ -13,6 +14,8 @@ class Bookings
 		this.bookingAdded(newBooking);
 		this.bookingsChanged(this.BookingsList);
 	}
+
+
 
 	bookingAdded(newBooking) { this.onBookingAdded.forEach(f => f(newBooking)); }
 	bookingsChanged(BookingsList) { this.onBookingsChanged.forEach(f => f(BookingsList)); }
@@ -59,8 +62,32 @@ function checkProximityOfBooking(oLat, oLng, bLat, bLng, radius)
 		   radius;
 }
 
+//For each point of interest bookings older than 1hr have to be removed
+function removeOldBookingsFromPoI()
+{
+	// for (pointOfInterest of pointsOfInterest) { console.log("pointOfInterest.bookings: ", pointOfInterest.bookings); }
+
+	for (pointOfInterest of pointsOfInterest) {
+		bookingsToRemove = [];
+		for (booking of pointOfInterest.bookings) {
+			// console.log("booking.timestamp + 7000: ", booking.timestamp + 7000);
+			// console.log("Date.now(): ", Date.now());
+			if (booking.timestamp + 7000 < Date.now()) { bookingsToRemove.push(booking); }
+		}
+		// console.log("bookingsToRemove: ", bookingsToRemove);
+		for (bookingToRemove of bookingsToRemove) {
+			const index = pointOfInterest.bookings.indexOf(bookingToRemove);
+			if (index > -1) { pointOfInterest.bookings.splice(index, 1); }
+		}
+	}
+
+	setTimeout(removeOldBookingsFromPoI, 5000);
+	// for (pointOfInterest of pointsOfInterest) { console.log("pointOfInterest.bookings: ", pointOfInterest.bookings); }
+}
+
 function checkProximityOfBookingToOtherPointsOfInterest(newBooking)
 {
+	console.log("newBooking: ", newBooking);
 	for (pointOfInterest of pointsOfInterest) {
 		if (checkProximityOfBooking(pointOfInterest.lat, pointOfInterest.lng, newBooking.lat, newBooking.lng, 1000)) {
 			if (pointOfInterest.ID == cityCentreID) { console.log("booking close to city centre"); }
@@ -70,7 +97,7 @@ function checkProximityOfBookingToOtherPointsOfInterest(newBooking)
 			pointOfInterest.bookings.push(newBooking);
 		}
 	}
-	console.log("pointsOfInterest: ", pointsOfInterest);
+	// for (pointOfInterest of pointsOfInterest) { console.log("pointOfInterest.bookings: ", pointOfInterest.bookings); }
 }
 
 bookingsList.onBookingAdded.push((newBooking) => checkProximityOfBookingToOtherPointsOfInterest(newBooking));

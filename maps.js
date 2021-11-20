@@ -5,11 +5,6 @@ function degrees_to_radians(degrees) {
   return degrees * (pi / 180);
 }
 
-const MUNICH_CENTRE_LAT = 48.137154;
-const MUNICH_CENTRE_LNG = 11.576124;
-
-const radius = 15000;
-
 function getLocation(x0, y0, radius) {
   // Random random = new Random();
 
@@ -41,7 +36,7 @@ function generateChargingStations(numChargingStations) {
 
   for (let i = 0; i < numChargingStations; i++) {
     const marker = new google.maps.Marker({
-      position: getLocation(MUNICH_CENTRE_LAT, MUNICH_CENTRE_LNG, radius),
+      position: getLocation(MUNICH_CENTRE_LAT, MUNICH_CENTRE_LNG, RADIUS),
       map,
       label: "CS",
       title: `Charging Station No. ${i}`,

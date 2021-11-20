@@ -31,10 +31,8 @@ function getLocation(x0, y0, radius) {
 	// System.out.println();
 	console.log("Longitude: " + foundLongitude + " Latitude: " + foundLatitude);
 }
-
-
+//Usage e.g.
 getLocation(48, 11, 500);
-getLocation(48, 11, 50);
 
 
 /* @Miki: am mutat requestul aici din index.htnl <script>

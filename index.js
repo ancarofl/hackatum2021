@@ -108,6 +108,8 @@ async function assignLowestPassengerWaitTimeCar() {
 
 		// console.log("Car " + car.vehicleID + "status: " + car.status);
 		if (car.status === "FREE") {
+			carToPassengerTrip = { duration: 0, distance: 0 };
+
 			// If car FREE, car to passenger = current car location to requested trip origin
 			var idleCarToPassengerTrip = await getCarToPassengerTrip(car.lat, car.lng);
 			carToPassengerTrip = idleCarToPassengerTrip;
@@ -130,8 +132,51 @@ async function assignLowestPassengerWaitTimeCar() {
 			}
 		}
 		else if (car.status === "BOOKED") {
+			carToPassengerTrip = { duration: 0, distance: 0 };
 			// If car BOOKED, time to passenger = (current car location to current trip destination) + (current trip destination to requedted trip origin)
-			console.log("BOOKED NOT IMPLEMENTED YET");
+
+			/* 	For now traveling along a route and therefore real-time location is not simulated.
+				Instead, by knowing the trip end time we calculate remaining time as trip end time - current time.
+				This is of course not 100% accurate - but it is our assumption that in a real-world scenario a car would be reporting its location via GPS. 
+				Even if that were not the case and GPS was taken out of the equation, not doing all the extra distance/route checks might still be worth it, as we anticipate the impact on the algorithm's efficiency is not that high.
+				We aim to calculate this impact later on, but we expect that trips that are a bit quicker and those that are a bit slower should even things out, thus meaning that
+			only some outliers when something major happens (e.g. an accident or a natural disaster or a technical issue) are not accounted for by our current model.
+				Same story regarding battery(?) - we'll only update battery level at the end of a trip for ease - but assume that's updated live. */
+
+			// Find what trip the car is on
+			var bookingData = null;
+			if (localBookingsArray.length > 0) {
+				for (const localBooking of localBookingsArray) {
+					if (localBooking.vehicleID == car.vehicleID) {
+						bookingData = localBooking;
+						break;
+					}
+				}
+				if (bookingData != null) {
+					var timeToEndTrip = bookingData.tripEndTime - Date.now();
+					var busyCarTripEndToPassengerTrip = await getCarToPassengerTrip(bookingData.tripEndLat, bookingData.tripEndLng);
+					carToPassengerTrip.duration = timeToEndTrip + busyCarTripEndToPassengerTrip.duration;
+
+					//console.log("Time to end current trip: ", timeToEndTrip);
+					//console.log("Current trip destination to requested trip origin: ", busyCarTripEndToPassengerTrip.duration);
+					//console.log("Time for busy car to get to passenger in sec: ", carToPassengerTrip.duration);
+
+					/* 2.1.4.2. */
+					var totalCarTravelDistanceNeeded =
+						bookingData.tripDistance +
+						requestedTrip.distance +
+						SAFETY_BATTERY_TRAVEL_DISTANCE;
+
+					/* 2.1.5 */
+					if (isBatteryEnough(car, totalCarTravelDistanceNeeded)) {
+						let potentialCarInfo = {
+							vehicleID: car.vehicleID,
+							carToPassengerDuration: carToPassengerTrip.duration
+						};
+						timesToPassengerArray.push(potentialCarInfo);
+					}
+				}
+			}
 		} else if (car.status === "SERVICE_BLOCK") {
 			console.log("SERVICE BLOCK NOT IMPLEMENTED YET.");
 		}
@@ -145,6 +190,9 @@ async function assignLowestPassengerWaitTimeCar() {
 
 		/* 4 + 5*/
 		var carId = timesToPassengerArray[0].vehicleID;
+
+		console.log("Times to passenger array ", timesToPassengerArray);
+
 		createLocalAndDBBooking(requestedTrip, carId);
 		console.log("Assignment done. Car ", carId, " will arrive to the passenger in ", timesToPassengerArray[0].carToPassengerDuration, " seconds aka ", timesToPassengerArray[0].carToPassengerDuration / 60, " minutes, then the trip from TUM to the airport will take ", requestedTrip.duration / 60, " minutes!!!");
 	} else {
@@ -230,8 +278,11 @@ async function createLocalAndDBBooking(requestedTrip, vehicleID) {
 	var bookingObject = {
 		id: bookingId,
 		vehicleID: vehicleID,
-		tripStart: Date.now() + (timesToPassengerArray[0].carToPassengerDuration * 1000),
-		tripEnd: Date.now() + (timesToPassengerArray[0].carToPassengerDuration + requestedTrip.duration) * 1000,
+		tripStartTime: Date.now() + (timesToPassengerArray[0].carToPassengerDuration * 1000),
+		tripEndTime: Date.now() + (timesToPassengerArray[0].carToPassengerDuration + requestedTrip.duration) * 1000,
+		tripEndLat: dlat,
+		tripEndLng: dlng,
+		tripDistance: requestedTrip.distance,
 	};
 	localBookingsArray.push(bookingObject);
 	console.log("Local bookings: ", localBookingsArray);
@@ -255,7 +306,7 @@ async function createBooking() {
 		}
 	}).then((response) => response.json())
 		.then((data) => {
-			console.log("Create booking response: ", data);
+			// console.log("Create booking response: ", data);
 			result = data.bookingID;
 		});
 
@@ -270,8 +321,7 @@ async function assignCarToBooking(bookingId, vehicleID) {
 		}
 	}).then((response) => response.json())
 		.then((data) => {
-			console.log("Assign car response: ", data);
-
+			// console.log("Assign car response: ", data);
 		});
 }
 
@@ -288,7 +338,6 @@ async function startTrip(bookingId) {
 async function endTrip(bookingId) {
 	const response = await fetch("https://us-central1-sixt-hackatum-2021-orange.cloudfunctions.net/api/bookings/" + bookingId + "/passengerGotOff", {
 		method: "POST",
-		method: "POST",
 		headers: {
 			"Content-Type": "application/json"
 		}
@@ -299,6 +348,7 @@ async function endTrip(bookingId) {
 /* DEBUG/TEST FUNCTIONS */
 
 async function endAllActiveBookings() {
+	console.log("Ending all VEHICLE_ASSIGNED bookings thus making the cars FREE again (YEY FOR INDEPENDENCE).");
 	for (const booking of bookings) {
 		if (booking.status === "VEHICLE_ASSIGNED") {
 			// console.log("Vehicle assigned booking: ", booking);
@@ -307,4 +357,5 @@ async function endAllActiveBookings() {
 			await endTrip(booking.bookingID);
 		}
 	}
+	localBookingsArray = [];
 }

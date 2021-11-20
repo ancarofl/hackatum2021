@@ -1,13 +1,24 @@
+.container {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	height: 100%;
+}
+
+/* Sim UI CSS */
+.sim-ui {
+}
+
+/* Maps CSS */
 /* Always set the map height explicitly to define the size of the div
        * element that contains the map. */
-	   #map {
-		height: 70%;
-	  }
-	  
-	  /* Optional: Makes the sample page fill the window. */
-	  html,
-	  body {
-		height: 100%;
-		margin: 0;
-		padding: 0;
-	  }
+#map {
+	height: 100%;
+}
+
+/* Makes the sample page fill the window. */
+html,
+body {
+	margin: 0;
+	height: 100%;
+	padding: 0;
+}

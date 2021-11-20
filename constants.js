@@ -1,9 +1,14 @@
-/* All distances are expressed in METRES. All durations are exressed in SECONDS. Mainly because that is the HERE API default. */
+/* All distances are expressed in METRES. All durations are expressed in SECONDS. Mainly because that is the HERE API default. */
 
 const FULL_CHARGE_TRAVEL_DISTANCE = 300000;
 const SAFETY_BATTERY_TRAVEL_DISTANCE = 10000;
+
 const SAFETY_BATTERY_PERCENTAGE = 10;
+const LOWER_SAFETY_BATTERY_PERCENTAGE = 20;
+const UPPER_SAFETY_BATTERY_PERCENTAGE = 80;
 
 const MUNICH_CENTRE_LAT = 48.137154;
 const MUNICH_CENTRE_LNG = 11.576124;
+const MUNICH_AIRPORT_LAT = 48.3510;
+const MUNICH_AIRPORT_LNG = 11.7764;
 const RADIUS = 15000;

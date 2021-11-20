@@ -8,8 +8,6 @@ function degrees_to_radians(degrees)
 
 function getLocation(x0, y0, radius)
 {
-	// Random random = new Random();
-
 	// Convert radius from meters to degrees
 	radiusInDegrees = radius / 111000.0;
 
@@ -31,6 +29,7 @@ function getLocation(x0, y0, radius)
 
 let markers = [];
 let chargingStations = [];
+let chargingStationsMarkers = [];
 function generateChargingStations(numChargingStations)
 {
 	const infoWindow = new google.maps.InfoWindow();
@@ -45,19 +44,23 @@ function generateChargingStations(numChargingStations)
 				color : "#ffffff",
 				fontSize : "18px",
 			},
-			title : `Charging Station No. ${i}`,
+			title : `Charging Station No. ${i + 1}`,
+			ID : markers.length
 		});
 		marker.addListener("click", () => {
 			infoWindow.close();
 			infoWindow.setContent(marker.getTitle());
 			infoWindow.open(marker.getMap(), marker);
 		});
-		chargingStations.push(marker);
 		markers.push(marker);
+		chargingStationsMarkers.push(marker);
+
+		chargingStations.push({lat : marker.position.lat(), lng : marker.position.lng(), proximityToPoI : 0, ID: marker.ID});
 	}
 }
 
 let sixtParkings = [];
+let sixtParkingsMarkers = [];
 function generateSixtParkingLocations(numSixtLocations)
 {
 	const infoWindow = new google.maps.InfoWindow();
@@ -67,15 +70,18 @@ function generateSixtParkingLocations(numSixtLocations)
 			position : getLocation(MUNICH_CENTRE_LAT, MUNICH_CENTRE_LNG, RADIUS),
 			map,
 			label : "Sixt",
-			title : `Sixt Loc No. ${i}`,
+			title : `Sixt Loc No. ${i + 1}`,
+			ID : markers.length
 		});
 		marker.addListener("click", () => {
 			infoWindow.close();
 			infoWindow.setContent(marker.getTitle());
 			infoWindow.open(marker.getMap(), marker);
 		});
-		sixtParkings.push(marker);
 		markers.push(marker);
+		sixtParkingsMarkers.push(marker);
+
+		sixtParkings.push({lat : marker.position.lat(), lng : marker.position.lng(), proximityToPoI : 0, ID: marker.ID});
 	}
 }
 
@@ -93,7 +99,8 @@ function generateCars(noOfCars)
 				color : "#ffffff",
 				fontSize : "18px",
 			},
-			title : `Car No. ${i}`,
+			title : `Car No. ${i + 1}`,
+			ID : markers.length
 		});
 		marker.addListener("click", () => {
 			infoWindow.close();
@@ -102,6 +109,120 @@ function generateCars(noOfCars)
 		});
 		markers.push(marker);
 	}
+}
+
+let freeParkings = [];
+let freeParkingsMarkers = [];
+function generateFreeParkings(noOfFreeParkings)
+{
+	const infoWindow = new google.maps.InfoWindow();
+
+	for (let i = 0; i < noOfFreeParkings; i++) {
+		const marker = new google.maps.Marker({
+			position : getLocation(MUNICH_CENTRE_LAT, MUNICH_CENTRE_LNG, RADIUS),
+			map,
+			label : {
+				text : "\ue54f",
+				fontFamily : "Material Icons",
+				color : "#ffffff",
+				fontSize : "18px",
+			},
+			title : `Free Parking No. ${i + 1}`,
+			ID : markers.length
+		});
+		marker.addListener("click", () => {
+			infoWindow.close();
+			infoWindow.setContent(marker.getTitle());
+			infoWindow.open(marker.getMap(), marker);
+		});
+		markers.push(marker);
+		freeParkingsMarkers.push(marker);
+
+		freeParkings.push({lat : marker.position.lat(), lng : marker.position.lng(), proximityToPoI : 0, ID: marker.ID});
+	}
+}
+
+let pointsOfInterest = [];
+let pointsOfInterestMarkers = [];
+function generatePointsOfInterest(noOfPointsOfInterest)
+{
+	const infoWindow = new google.maps.InfoWindow();
+
+	const airportMarker = new google.maps.Marker({
+		position : {lat : MUNICH_AIRPORT_LAT, lng : MUNICH_AIRPORT_LNG},
+		map,
+		label : {
+			text : "\uea52",
+			fontFamily : "Material Icons",
+			color : "#ffffff",
+			fontSize : "18px",
+		},
+		title : `Airport`,
+		ID : markers.length
+	});
+	airportMarker.addListener("click", () => {
+		infoWindow.close();
+		infoWindow.setContent(airportMarker.getTitle());
+		infoWindow.open(airportMarker.getMap(), marker);
+	});
+	markers.push(airportMarker);
+	pointsOfInterestMarkers.push(airportMarker);
+
+	// pointsOfInterest.push({lat : airportMarker.position.lat(), lng : airportMarker.position.lng()});
+
+	const cityCentreMarker = new google.maps.Marker({
+		position : {lat : MUNICH_CENTRE_LAT, lng : MUNICH_CENTRE_LNG},
+		map,
+		label : {
+			text : "\uea52",
+			fontFamily : "Material Icons",
+			color : "#ffffff",
+			fontSize : "18px",
+		},
+		title : `City Centre`,
+		ID : markers.length
+	});
+	cityCentreMarker.addListener("click", () => {
+		infoWindow.close();
+		infoWindow.setContent(cityCentreMarker.getTitle());
+		infoWindow.open(cityCentreMarker.getMap(), marker);
+	});
+	markers.push(cityCentreMarker);
+	pointsOfInterestMarkers.push(cityCentreMarker);
+
+	//TODO: maybe don't add city centrw and airport to the pointsOfInterest array
+	// pointsOfInterest.push({lat : cityCentreMarker.position.lat(), lng : cityCentreMarker.position.lng()});
+
+	for (let i = 0; i < noOfPointsOfInterest; i++) {
+		const marker = new google.maps.Marker({
+			position : getLocation(MUNICH_CENTRE_LAT, MUNICH_CENTRE_LNG, RADIUS),
+			map,
+			label : {
+				text : "\uea52",
+				fontFamily : "Material Icons",
+				color : "#ffffff",
+				fontSize : "18px",
+			},
+			title : `Point of Interest No. ${i + 1}`,
+			ID : markers.length
+		});
+		marker.addListener("click", () => {
+			infoWindow.close();
+			infoWindow.setContent(marker.getTitle());
+			infoWindow.open(marker.getMap(), marker);
+		});
+		markers.push(marker);
+		pointsOfInterestMarkers.push(marker);
+
+		pointsOfInterest.push({lat : marker.position.lat(), lng : marker.position.lng(), ID: marker.ID, bookings: []});
+		console.log("pointsOfInterest: ", pointsOfInterest);
+	}
+}
+
+function changeMarkerPosition(marker)
+{
+	var latlng = new google.maps.LatLng(40.748774, -73.985763);
+	marker.setPosition(latlng);
 }
 
 function initMap()
@@ -115,6 +236,8 @@ function initMap()
 	let numSixtLocations = 2;
 	let numChargingStations = 3;
 	let noOfCars = 3;
+	let noOfFreeParkings = 1;
+	let noOfPointsOfInterest = 1;
 
 	// var numSixtLocations = document.getElementById('numSixtLocations').value;
 	// var numChargingStations = document.getElementById('numChargingStations').value;
@@ -123,4 +246,8 @@ function initMap()
 	generateChargingStations(numChargingStations);
 	generateSixtParkingLocations(numSixtLocations);
 	generateCars(noOfCars);
+	generateFreeParkings(noOfFreeParkings);
+
+	// TODO: generate orders in a point of interest; the more orders we get in the PoI, the more we increase it's score;
+	generatePointsOfInterest(noOfPointsOfInterest);
 }

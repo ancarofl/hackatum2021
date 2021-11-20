@@ -4,16 +4,16 @@
 // address instead of lat/lng.
 
 // TUM coords
-var olat = 48.149803141861;
-var olng = 11.567860198670074;
+var olat = MUNICH_TUM_LAT;
+var olng = MUNICH_TUM_LNG;
 
 // UvA coords
 // var dlat = 52.35632784585438;
 // var dlng = 4.971252886117597;
 
 // Munich Airport coords
-var dlat = 48.353144657793344;
-var dlng = 11.786160706625926;
+var dlat = MUNICH_AIRPORT_LAT;
+var dlng = MUNICH_AIRPORT_LNG;
 
 // For reference
 // Using HERE

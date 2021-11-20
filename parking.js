@@ -1,5 +1,3 @@
-// const { time } = require("console");
-
 // class Car {
 //   constructor(lat, long) {
 //     this.lat = lat;
@@ -7,16 +5,18 @@
 //   }
 // }
 
-async function getCar(carID) {
+async function getCar(carID)
+{
 	return fetch("https://us-central1-sixt-hackatum-2021.cloudfunctions.net/api/vehicles/" + carID)
-		.then((response) => response.json())
-		.then((data) => {
-			console.log("Car: ", data);
-			return JSON.parse(JSON.stringify(data));
-		});
+				.then((response) => response.json())
+				.then((data) => {
+					console.log("Car: ", data);
+					return JSON.parse(JSON.stringify(data));
+				});
 }
 
-async function findParkingSpot(/* carID */) {
+async function findParkingSpot(/* carID */)
+{
 	// get car data from API using carID
 	// let car = new Car(lat, long);
 	var carID = "77ADiv9eITdsFPv2VnF9";
@@ -36,26 +36,30 @@ async function findParkingSpot(/* carID */) {
 	}
 
 	// 2. then if the battery is more than enough (20%, which corresponds to 60km, we look for the taxi parking)
-	if(car.charge >= UPPER_SAFETY_BATTERY_PERCENTAGE){ 
+	if (car.charge >= UPPER_SAFETY_BATTERY_PERCENTAGE) {
 		console.log("look for free or sixt parking");
 		return;
 	}
 
+	// compute score to find best parking
 
-	//compute score to find best parking
+	parkings = freeParkings + sixtParkings + chargingStations; 
 
-	computeParkingPoIScore();
+	for (parking of parkings) {
 
-	a = 0.5;
-	b = 0.2; 
-	c = 0.3;
-	const score = a * distance + b * type + c * proximityToPoI;
+		computeParkingPoIScore();
+	
+
+		const score = SCORE_a * distance + SCORE_b * type + SCORE_c * proximityToPoI;
+	}
+
+
 
 	// 3. free parking (maybe Rewe, Lidl etc.)
 
 	// 4. nearest Sixt parking
 
-	for (sixtParking of sixtParkings) { }
+	for (sixtParking of sixtParkings) {}
 
 	// 5. road side while trying to go to 3,4
 

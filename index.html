@@ -1,23 +1,54 @@
-<div>
-	<label for="olat">Departue lat</label><br />
-	<input type="text" id="olat" name="olat" /><br />
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>SimUCity</title>
+		<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+		<link rel="stylesheet" type="text/css" href="./styles.css" />
+		<script src="maps.js"></script>
+	</head>
+	<body>
+		<div class="container">
+			<div class="sim-ui">
+				<div>
+					<h2>Kinda working buttons</h2>
 
-	<label for="olng">Departure lng</label><br />
-	<input type="text" id="olng" name="olng" /><br />
+					<button onclick="assignLowestPassengerWaitTimeCar()">
+						Assign lowest passenger wait time car
+					</button>
+				</div>
 
-	<label for="dlat">Arrival lat</label><br />
-	<input type="text" id="dlat" name="dlat" /><br />
+				<div>
+					<h3>Test/WIP buttons and other things</h3>
 
-	<label for="dlng">Arrival lng</label><br />
-	<input type="text" id="dlng" name="dlng" /><br />
+					<div>
+						<label for="olat">Departue lat</label><br />
+						<input type="text" id="olat" name="olat" /><br />
 
-	<button onclick="callTaxi()">Call taxi</button>
+						<label for="olng">Departure lng</label><br />
+						<input type="text" id="olng" name="olng" /><br />
 
-	<button onclick="assignLowestPassengerWaitTimeCar()">
-		Assign lowest passenger wait time car
-	</button>
-</div>
+						<label for="dlat">Arrival lat</label><br />
+						<input type="text" id="dlat" name="dlat" /><br />
 
-<script src="apiKeys.js"></script>
-<script src="constants.js"></script>
-<script src="index.js"></script>
+						<label for="dlng">Arrival lng</label><br />
+						<input type="text" id="dlng" name="dlng" /><br />
+					</div>
+
+					<button onclick="callTaxi()">Call taxi</button>
+					<button onclick="getChargingStations()">Get charging station</button>
+				</div>
+			</div>
+			<div id="map"></div>
+		</div>
+
+		<!-- Async script executes immediately and must be after any DOM elements used in callback. -->
+		<script
+			src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg&callback=initMap&v=weekly&channel=2"
+			async
+		></script>
+	</body>
+
+	<script src="apiKeys.js"></script>
+	<script src="constants.js"></script>
+	<script src="index.js"></script>
+</html>

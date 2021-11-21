@@ -36,14 +36,7 @@ var localBookingsArray = [];
 
 
 async function assignLowestPassengerWaitTimeCar() {
-	//cars = await getCars()
-	cars = [{
-		charge: 100,
-		lat: 48.353144657793344,
-		lng: 11.786160706625926,
-		status: "FREE",
-		vehicleID: "0BE3W0opSKUM7SMF83ML"
-	}];
+	cars = await getCars()
 	generateCars(cars);
 
 	console.log("Cars: ", cars);
@@ -116,7 +109,9 @@ async function assignLowestPassengerWaitTimeCar() {
 			if (isBatteryEnoughForDistance(car, totalCarTravelDistanceNeeded)) {
 				let potentialCarInfo = {
 					vehicleID: car.vehicleID,
-					carToPassengerDuration: carToPassengerTrip.duration
+					carToPassengerDuration: carToPassengerTrip.duration,
+					emptyTime: carToPassengerTrip.duration,
+					emptyDist: carToPassengerTrip.distance,
 				};
 				timesToPassengerArray.push(potentialCarInfo);
 			}
@@ -156,12 +151,15 @@ async function assignLowestPassengerWaitTimeCar() {
 						bookingData.tripDistance +
 						requestedTrip.distance +
 						SAFETY_BATTERY_TRAVEL_DISTANCE;
+					// ADAUGA BUSY TRIP . DISTANCE AICI
 
 					/* 2.1.5 */
 					if (isBatteryEnoughForDistance(car, totalCarTravelDistanceNeeded)) {
 						let potentialCarInfo = {
 							vehicleID: car.vehicleID,
-							carToPassengerDuration: carToPassengerTrip.duration
+							carToPassengerDuration: carToPassengerTrip.duration,
+							emptyTime: busyCarTripEndToPassengerTrip.duration,
+							emptyDist: busyCarTripEndToPassengerTrip.distance,
 						};
 						timesToPassengerArray.push(potentialCarInfo);
 					}
@@ -184,6 +182,9 @@ async function assignLowestPassengerWaitTimeCar() {
 		var car = await getCar(carId);
 
 		console.log("Times to passenger array ", timesToPassengerArray);
+
+		timeTravelledEmpty += timesToPassengerArray[0].emptyTime;
+		distanceTravelledEmpty += timesToPassengerArray[0].emptyDist;
 
 		createLocalAndDBBooking(requestedTrip, car, (carToPassengerTrip.distance + requestedTrip.distance));
 		console.log("Assignment done. Car ", carId, " will arrive to the passenger in ", timesToPassengerArray[0].carToPassengerDuration, " seconds aka ", timesToPassengerArray[0].carToPassengerDuration / 60, " minutes, then the trip from TUM to the airport will take ", requestedTrip.duration / 60, " minutes!!!");

@@ -59,7 +59,8 @@ async function updateCarCoords(id, lat, lng, car) {
 		}
 	}).then((response) => response.json())
 		.then((data) => {
-			console.log("updateCarCoords response: ", data);
+			// console.log("updateCarCoords response: ", data);
+			console.log("Coords have been update ...")
 			/*result = {
 				lat: data.lat,
 				lng: data.lng

@@ -63,9 +63,11 @@ function generateBookingCloseToPointOfInterest(pointOfInterest)
 	bookingsList.addBooking(bookingObject);
 }
 
-async function generateRealBookingCloseToPointOfInterest(pointOfInterest)
+async function generateRealBookingCloseToPointOfInterest()
 {
-	pos = getLocation(pointOfInterest.lat, pointOfInterest.lng, 500)
+	if (pointsOfInterest.length < 1) { return; }
+
+	pos = getLocation(pointsOfInterest[0].lat, pointsOfInterest[0].lng, 500)
 	pos2 = getLocation(MUNICH_CENTRE_LAT, MUNICH_CENTRE_LNG, RADIUS);
 	var bookingObject = {olat : pos.lat, olng : pos.lng, dlat : pos2.lat, dlng : pos2.lng, timestamp : Date.now()};
 

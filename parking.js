@@ -8,6 +8,7 @@ async function updateCarChargeLevel(carID)
 		}
 
 		await changeChargeLevel(car.vehicleID, car.charge + 5);
+		timeIdleCharging += 5000;
 		console.log("Car charging... Level: ", car.charge);
 	} else {
 		return;
@@ -37,6 +38,9 @@ async function findParkingSpot(carID)
 	if (car.charge <= SAFETY_BATTERY_PERCENTAGE) {
 		console.log("Battery low. Car: ", carID, " will go ", chargingStationsInfo[0].distance / 1000.0, " km to charging station at (",
 					chargingStationsInfo[0].lat, ", ", chargingStationsInfo[0].lng, ") ");
+
+		distanceTravelledEmpty += chargingStationsInfo[0].distance;
+		timeTravelledEmpty += chargingStationsInfo[0].duration;
 
 		setTimeout(async function() {
 			await updateCarCoords(car.vehicleID, chargingStationsInfo[0].lat, chargingStationsInfo[0].lng).then((data) => { updateCarPosition(data); });

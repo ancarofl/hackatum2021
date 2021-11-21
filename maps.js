@@ -55,7 +55,7 @@ function generateChargingStations(numChargingStations)
 		markers.push(marker);
 		chargingStationsMarkers.push(marker);
 
-		chargingStations.push({lat : marker.position.lat(), lng : marker.position.lng(), proximityToPoI : 0, ID: marker.ID});
+		chargingStations.push({lat : marker.position.lat(), lng : marker.position.lng(), proximityToPoI : 0, ID : marker.ID});
 	}
 }
 
@@ -81,15 +81,16 @@ function generateSixtParkingLocations(numSixtLocations)
 		markers.push(marker);
 		sixtParkingsMarkers.push(marker);
 
-		sixtParkings.push({lat : marker.position.lat(), lng : marker.position.lng(), proximityToPoI : 0, ID: marker.ID});
+		sixtParkings.push({lat : marker.position.lat(), lng : marker.position.lng(), proximityToPoI : 0, ID : marker.ID});
 	}
 }
 
-function generateCars(noOfCars)
+carsOnMap = [];
+function generateCars(cars)
 {
 	const infoWindow = new google.maps.InfoWindow();
 
-	for (let i = 0; i < noOfCars; i++) {
+	for (let i = 0; i < cars.length; i++) {
 		const marker = new google.maps.Marker({
 			position : getLocation(MUNICH_CENTRE_LAT, MUNICH_CENTRE_LNG, RADIUS),
 			map,
@@ -108,7 +109,10 @@ function generateCars(noOfCars)
 			infoWindow.open(marker.getMap(), marker);
 		});
 		markers.push(marker);
+
+		carsOnMap.push({lat : marker.position.lat(), lng : marker.position.lng(), ID : marker.ID});
 	}
+	return carsOnMap;
 }
 
 let freeParkings = [];
@@ -138,7 +142,7 @@ function generateFreeParkings(noOfFreeParkings)
 		markers.push(marker);
 		freeParkingsMarkers.push(marker);
 
-		freeParkings.push({lat : marker.position.lat(), lng : marker.position.lng(), proximityToPoI : 0, ID: marker.ID});
+		freeParkings.push({lat : marker.position.lat(), lng : marker.position.lng(), proximityToPoI : 0, ID : marker.ID});
 	}
 }
 
@@ -148,9 +152,15 @@ function changeMarkerPosition(marker)
 	marker.setPosition(latlng);
 }
 
+function updateCarPosition(car)
+{
+	var latlng = new google.maps.LatLng(40.748774, -73.985763);
+	marker.setPosition(latlng);
+}
+
+
 function initMap()
 {
-	//   const myLatLng = { lat: 48.137154, lng: 11.576124 };
 	map = new google.maps.Map(document.getElementById("map"), {
 		center : {lat : MUNICH_CENTRE_LAT, lng : MUNICH_CENTRE_LNG},
 		zoom : 11,

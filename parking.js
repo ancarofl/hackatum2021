@@ -38,21 +38,14 @@ async function findParkingSpot(/* carID */)
 	// 2. then if the battery is more than enough (20%, which corresponds to 60km, we look for the taxi parking)
 	if (car.charge >= UPPER_SAFETY_BATTERY_PERCENTAGE) {
 		console.log("look for free or sixt parking");
+		// TODO: take again proximity to either free parking or sixt parking;
 		return;
 	}
 
-	// compute score to find best parking
-	parkings = freeParkings + sixtParkings + chargingStations; 
+	// TODO: compute score to find best parking and go to parking based on score
+	computeParkingPoIScore();
 
-	for (parking of parkings) {
-
-		computeParkingPoIScore();
-	
-
-		const score = SCORE_a * distance + SCORE_b * type + SCORE_c * proximityToPoI;
-	}
-
-
+	for (parking of parkings) { const score = SCORE_a * distance + SCORE_b * type + SCORE_c * proximityToPoI; }
 
 	// 3. free parking (maybe Rewe, Lidl etc.)
 
@@ -65,8 +58,26 @@ async function findParkingSpot(/* carID */)
 	 */
 }
 
-async function computeParkingPoIScore(parking){
+async function computeParkingPoIScore(parkings, pointsOfInterest)
+{
+	// let parkings = [...freeParkings, ...sixtParkings, ...chargingStations];
 
+	for (parking of parkings) {
+		parking.proximityToPoI = 0;
+		for (pointOfInterest of pointsOfInterest) {
+			// console.log("parking.lat: ", parking.lat);
+			// console.log("parking.lng: ", parking.lng);
+			// console.log("pointOfInterest.lat: ", pointOfInterest.lat);
+			// console.log("pointOfInterest.lng: ", pointOfInterest.lng);
+			const res = await getTripDistanceAndTime(parking.lat, parking.lng, pointOfInterest.lat, pointOfInterest.lng);
+			// console.log("Trip info: ", data);
+			console.log("res.distance: ", res.distance);
+			console.log("pointOfInterest.bookings.length: ", pointOfInterest.bookings.length);
+			parking.proximityToPoI += pointOfInterest.bookings.length * 1000 / res.distance;
+		}
+
+		console.log("parking.proximityToPoI: ", parking.proximityToPoI);
+	}
 }
 
 async function getChargingStationInfos(car)
@@ -82,21 +93,20 @@ async function getChargingStationInfos(car)
 		// console.log("chargingStation.position.lat(): ", chargingStation.position.lat());
 		// console.log("chargingStation.position.lng(): ", chargingStation.position.lng());
 
-		// const res = await getTripDistanceAndTime(car.lat, car.lng, chargingStation.position.lat(), chargingStation.position.lng());
+		const res = await getTripDistanceAndTime(car.lat, car.lng, chargingStation.position.lat(), chargingStation.position.lng());
 
-		// // console.log("carToChargingStationDistance: ", res.distance);
-		// // console.log("carToChargingStationDuration: ", res.duration);
+		// console.log("carToChargingStationDistance: ", res.distance);
+		// console.log("carToChargingStationDuration: ", res.duration);
 
-		// const info = {
-		// 	distance : res.distance,
-		// 	time : res.duration,
-		// 	lat : chargingStation.position.lat(),
-		// 	long : chargingStation.position.lng(),
-		// };
+		const info = {
+			distance : res.distance,
+			time : res.duration,
+			lat : chargingStation.position.lat(),
+			long : chargingStation.position.lng(),
+		};
 
-		// console.log("info: ", info);
-
-		// chargingStationsInfo.push(info);
+		console.log("info: ", info);
+		chargingStationsInfo.push(info);
 	}
 	chargingStationsInfo.sort((a, b) => (a.distance > b.distance ? 1 : -1));
 	return chargingStationsInfo;
@@ -115,7 +125,7 @@ async function getTripDistanceAndTime(carLat, carLong, csLat, csLong)
 				csLong + "&return=summary&apiKey=" + HERE_API_KEY)
 				.then((response) => response.json())
 				.then((data) => {
-					console.log("Car to charging station trip response: ", data);
+					console.log("Trip info: ", data);
 					result = {
 						duration : data.routes[0].sections[0].summary.duration,
 						distance : data.routes[0].sections[0].summary.length,

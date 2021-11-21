@@ -19,3 +19,8 @@ const RADIUS = 15000;
 const SCORE_a = 0.5;
 const SCORE_b = 0.2;
 const SCORE_c = 0.3;
+
+//Divider to modify time duration from the UI
+// const TIME_DIVIDER = 500.0
+
+const TIME_DIVIDER = 200.0

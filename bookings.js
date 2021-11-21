@@ -15,8 +15,6 @@ class Bookings
 		this.bookingsChanged(this.BookingsList);
 	}
 
-
-
 	bookingAdded(newBooking) { this.onBookingAdded.forEach(f => f(newBooking)); }
 	bookingsChanged(BookingsList) { this.onBookingsChanged.forEach(f => f(BookingsList)); }
 }
@@ -62,7 +60,7 @@ function checkProximityOfBooking(oLat, oLng, bLat, bLng, radius)
 		   radius;
 }
 
-//For each point of interest bookings older than 1hr have to be removed
+// For each point of interest bookings older than 1hr have to be removed
 function removeOldBookingsFromPoI()
 {
 	// for (pointOfInterest of pointsOfInterest) { console.log("pointOfInterest.bookings: ", pointOfInterest.bookings); }
@@ -72,7 +70,7 @@ function removeOldBookingsFromPoI()
 		for (booking of pointOfInterest.bookings) {
 			// console.log("booking.timestamp + 7000: ", booking.timestamp + 7000);
 			// console.log("Date.now(): ", Date.now());
-			if (booking.timestamp + 7000 < Date.now()) { bookingsToRemove.push(booking); }
+			if (booking.timestamp + 3600000 / TIME_DIVIDER < Date.now()) { bookingsToRemove.push(booking); }
 		}
 		// console.log("bookingsToRemove: ", bookingsToRemove);
 		for (bookingToRemove of bookingsToRemove) {

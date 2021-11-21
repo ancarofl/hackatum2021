@@ -26,7 +26,7 @@ function generatePointsOfInterest(noOfPointsOfInterest)
 	markers.push(airportMarker);
 	pointsOfInterestMarkers.push(airportMarker);
 	airportID = airportMarker.ID;
-	pointsOfInterest.push({lat : airportMarker.position.lat(), lng : airportMarker.position.lng(), ID: airportMarker.ID, bookings: []});
+	pointsOfInterest.push({lat : airportMarker.position.lat(), lng : airportMarker.position.lng(), ID : airportMarker.ID, bookings : []});
 
 	const cityCentreMarker = new google.maps.Marker({
 		position : {lat : MUNICH_CENTRE_LAT, lng : MUNICH_CENTRE_LNG},
@@ -49,7 +49,8 @@ function generatePointsOfInterest(noOfPointsOfInterest)
 	cityCentreID = cityCentreMarker.ID;
 	pointsOfInterestMarkers.push(cityCentreMarker);
 
-	pointsOfInterest.push({lat : cityCentreMarker.position.lat(), lng : cityCentreMarker.position.lng(), ID: cityCentreMarker.ID, bookings: []});
+	pointsOfInterest.push(
+				{lat : cityCentreMarker.position.lat(), lng : cityCentreMarker.position.lng(), ID : cityCentreMarker.ID, bookings : []});
 
 	for (let i = 0; i < noOfPointsOfInterest; i++) {
 		const marker = new google.maps.Marker({
@@ -72,7 +73,7 @@ function generatePointsOfInterest(noOfPointsOfInterest)
 		markers.push(marker);
 		pointsOfInterestMarkers.push(marker);
 
-		pointsOfInterest.push({lat : marker.position.lat(), lng : marker.position.lng(), ID: marker.ID, bookings: []});
+		pointsOfInterest.push({lat : marker.position.lat(), lng : marker.position.lng(), ID : marker.ID, bookings : []});
 		console.log("pointsOfInterest: ", pointsOfInterest);
 	}
 }

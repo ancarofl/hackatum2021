@@ -1,66 +1,63 @@
-function computeParkingPoIScore_TEST()
+let parkings_TEST = [];
+let pointsOfInterest_TEST = [];
+function generateTestMarkers()
 {
-	let parkings_TEST = [];
 
-	parkings_TEST.push({lat : 48.24485883803592, lng : 11.566880849264454, proximityToPoI : 0, ID : 1001});
-	parkings_TEST.push({lat : 48.137154, lng : 11.576124, proximityToPoI : 0, ID : 1002});
-	parkings_TEST.push({lat : 48.04594674183316, lng : 11.506859096809007, proximityToPoI : 0, ID : 1003});
-	parkings_TEST.push({lat : 48.35315005900295, lng : 11.79164231790762, proximityToPoI : 0, ID : 1004});
+	parkings_TEST.push({lat : 48.159289546390205, lng: 11.555676460124683, proximityToPoI : 0, ID : 1001, type: 70});
+	parkings_TEST.push({lat: 48.35948715826656, lng : 11.786154019133207, proximityToPoI : 0, ID : 1002, type: 50});
+	parkings_TEST.push({lat : 48.13712731268249, lng: 11.610436438088461, proximityToPoI : 0, ID : 1003, type: 50});
+	parkings_TEST.push({lat : 48.13162932269756, lng: 11.554733638675039, proximityToPoI : 0, ID : 1004, type: 30});
+	parkings_TEST.push({lat : 48.11352399233051, lng: 11.47027624198279, proximityToPoI : 0, ID : 1005, type: 70});
+	parkings_TEST.push({lat : 48.05088512744211, lng: 11.513622316663211, proximityToPoI : 0, ID : 1006, type: 50});
+	
 
-	let pointsOfInterest_TEST = [];
-
-	pointsOfInterest_TEST.push({lat : 48.35948715826656, lng : 11.786154019133207, ID : 3001, bookings : [ 1, 2, 3, 4, 5 ]});
+	pointsOfInterest_TEST.push({lat : 48.137154, lng : 11.576124 , ID : 3001, bookings : [ 1, 2, 3, 4, 5 ]});
 	pointsOfInterest_TEST.push(
-				{lat : 48.348014865807656, lng : 11.786244159138988, ID : 3002, bookings : [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 ]});
-	pointsOfInterest_TEST.push({lat : 48.348014865807656, lng : 11.786244159138988, ID : 3002, bookings : [ 1, 2, 3 ]});
+		{lat : 48.348014865807656, lng : 11.786244159138988, ID : 3002, bookings : [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 ]});
+	pointsOfInterest_TEST.push({lat : 48.06677334969835, lng: 11.430008325871313 , ID : 3003, bookings : [ 1, 2, 3, 4, 5, 6, 7 ]});
 
-	function testMap()
-	{
-		map = new google.maps.Map(document.getElementById("map"), {
-			center : {lat : MUNICH_CENTRE_LAT, lng : MUNICH_CENTRE_LNG},
-			zoom : 11,
+
+	const infoWindow = new google.maps.InfoWindow();
+
+	for (parking of parkings_TEST) {
+		const marker = new google.maps.Marker({
+			position : {lat : parking.lat, lng : parking.lng},
+			map,
+			label : {
+				text : "\ue54f",
+				fontFamily : "Material Icons",
+				color : "#ffffff",
+				fontSize : "18px",
+			},
+			title : `Parking ${parking.ID}`,
+			ID : markers.length
 		});
-
-		for (parkings of parkings_TEST) {
-			const marker = new google.maps.Marker({
-				position : {lat : parkings.lat, lng : parkings.lng},
-				map,
-				label : {
-					text : "\ue54f",
-					fontFamily : "Material Icons",
-					color : "#ffffff",
-					fontSize : "18px",
-				},
-				title : `Parking No. ${i + 1}`,
-				ID : markers.length
-			});
-			marker.addListener("click", () => {
-				infoWindow.close();
-				infoWindow.setContent(marker.getTitle());
-				infoWindow.open(marker.getMap(), marker);
-			});
-		}
-
-		for (poi of pointsOfInterest_TEST) {
-			const marker = new google.maps.Marker({
-				position : {lat : poi.lat, lng : poi.lng},
-				map,
-				label : {
-					text : "\ue54f",
-					fontFamily : "Material Icons",
-					color : "#ffffff",
-					fontSize : "18px",
-				},
-				title : `PoI No. ${i + 1}`,
-				ID : markers.length
-			});
-			marker.addListener("click", () => {
-				infoWindow.close();
-				infoWindow.setContent(marker.getTitle());
-				infoWindow.open(marker.getMap(), marker);
-			});
-		}
+		marker.addListener("click", () => {
+			infoWindow.close();
+			infoWindow.setContent(marker.getTitle());
+			infoWindow.open(marker.getMap(), marker);
+		});
 	}
 
-	computeParkingPoIScore(parkings_TEST, pointsOfInterest_TEST);
+	for (poi of pointsOfInterest_TEST) {
+		const marker = new google.maps.Marker({
+			position : {lat : poi.lat, lng : poi.lng},
+			map,
+			label : {
+				text : "\uea52",
+				fontFamily : "Material Icons",
+				color : "#ffffff",
+				fontSize : "18px",
+			},
+			title : `PoI ${poi.ID}`,
+			ID : markers.length
+		});
+		marker.addListener("click", () => {
+			infoWindow.close();
+			infoWindow.setContent(marker.getTitle());
+			infoWindow.open(marker.getMap(), marker);
+		});
+	}
+
+	// computeParkingPoIScore(parkings_TEST, pointsOfInterest_TEST);
 }

@@ -180,11 +180,10 @@ function initMap()
 	// var numChargingStations = document.getElementById('numChargingStations').value;
 	// var noOfCars = document.getElementById('noOfCars').value;
 
-	generateChargingStations(numChargingStations);
-	generateSixtParkingLocations(numSixtLocations);
-	// generateCars(noOfCars);
-	generateFreeParkings(noOfFreeParkings);
+	// generateChargingStations(numChargingStations);
+	// generateSixtParkingLocations(numSixtLocations);
+	// generateFreeParkings(noOfFreeParkings);
+	// generatePointsOfInterest(noOfPointsOfInterest);
 
-	// TODO: generate orders in a point of interest; the more orders we get in the PoI, the more we increase it's score;
-	generatePointsOfInterest(noOfPointsOfInterest);
+	generateTestMarkers();
 }

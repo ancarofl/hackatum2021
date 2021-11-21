@@ -23,6 +23,15 @@ function generateCityCentreBooking() {
 	bookingsList.addBooking(bookingObject);
 }
 
+
+function generateRealCityCentreBooking() {
+	pos = getLocation(MUNICH_CENTRE_LAT, MUNICH_CENTRE_LNG, 1000)
+	pos2 = getLocation(MUNICH_CENTRE_LAT, MUNICH_CENTRE_LNG, RADIUS);
+	var bookingObject = { olat: pos.lat, olng: pos.lng, dlat: pos2.lat, dlng: pos2.lng, timestamp: Date.now() };
+
+	bookingsList.addBooking(bookingObject);
+}
+
 function generateAirportBooking() {
 	pos = getLocation(MUNICH_AIRPORT_LAT, MUNICH_AIRPORT_LNG, 1000)
 	var bookingObject = { lat: pos.lat, lng: pos.lng, timestamp: Date.now() };
@@ -30,9 +39,25 @@ function generateAirportBooking() {
 	bookingsList.addBooking(bookingObject);
 }
 
+function generateRealAirportBooking() {
+	pos = getLocation(MUNICH_AIRPORT_LAT, MUNICH_AIRPORT_LNG, 1000)
+	pos2 = getLocation(MUNICH_CENTRE_LAT, MUNICH_CENTRE_LNG, RADIUS);
+	var bookingObject = { olat: pos.lat, olng: pos.lng, dlat: pos2.lat, dlng: pos2.lng, timestamp: Date.now() };
+
+	bookingsList.addBooking(bookingObject);
+}
+
 function generateBookingCloseToPointOfInterest(pointOfInterest) {
 	pos = getLocation(pointOfInterest.lat, pointOfInterest.lng, 500)
 	var bookingObject = { lat: pos.lat, lng: pos.lng, timestamp: Date.now() };
+
+	bookingsList.addBooking(bookingObject);
+}
+
+function generateRealBookingCloseToPointOfInterest(pointOfInterest) {
+	pos = getLocation(pointOfInterest.lat, pointOfInterest.lng, 500)
+	pos2 = getLocation(MUNICH_CENTRE_LAT, MUNICH_CENTRE_LNG, RADIUS);
+	var bookingObject = { olat: pos.lat, olng: pos.lng, dlat: pos2.lat, dlng: pos2.lng, timestamp: Date.now() };
 
 	bookingsList.addBooking(bookingObject);
 }

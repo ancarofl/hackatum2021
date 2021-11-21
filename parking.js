@@ -1,3 +1,21 @@
+async function updateCarChargeLevel(carID)
+{
+	const car = await getCar(carID); // command waits until completion
+	if (car.status === "SERVICE_BLOCK") {
+		if (car.charge === 100) {
+			await setServiceUnBlockingState(car.vehicleID);
+			return;
+		}
+
+		await changeChargeLevel(car.vehicleID, car.charge + 5);
+		console.log("Car charging... Level: ", car.charge);
+	} else {
+		return;
+	}
+
+	setTimeout(async function() { updateCarChargeLevel(carID); }, 5000);
+}
+
 async function findParkingSpot(carID)
 {
 	// get car data from API using carID
@@ -18,9 +36,18 @@ async function findParkingSpot(carID)
 	const chargingStationsInfo = await getChargingStationInfos(car);
 	if (car.charge <= SAFETY_BATTERY_PERCENTAGE) {
 		console.log("Battery low. Car: ", carID, " will go ", chargingStationsInfo[0].distance / 1000.0, " km to charging station at (",
-					chargingStationsInfo[0].lat, ", ", chargingStationsInfo[0].long, ") ");
+					chargingStationsInfo[0].lat, ", ", chargingStationsInfo[0].lng, ") ");
 
-		setTimeout(async function() { await setServiceBlockingState(car.vehicleID); }, chargingStationsInfo[0].duration);
+		setTimeout(async function() {
+			await updateCarCoords(car.vehicleID, chargingStationsInfo[0].lat, chargingStationsInfo[0].lng).then((data) => { updateCarPosition(data); });
+			await changeChargeLevel(car.vehicleID, car.charge - (chargingStationsInfo[0].distance / 3));
+			await setServiceBlockingState(car.vehicleID);
+		}, chargingStationsInfo[0].duration);
+
+		setTimeout(async function(){
+			updateCarChargeLevel(carID);
+		}, 5000);
+
 		return;
 	}
 
@@ -54,6 +81,8 @@ async function findParkingSpot(carID)
 
 		setTimeout(async function() {
 			await updateCarCoords(car.vehicleID, closest.parking.lat, closest.parking.lng).then((data) => { updateCarPosition(data); });
+			await changeChargeLevel(car.vehicleID, car.charge - (closest.distance / 3));
+
 		}, closest.duration);
 		return;
 	}
@@ -87,8 +116,9 @@ async function findParkingSpot(carID)
 
 	setTimeout(async function() {
 		await updateCarCoords(car.vehicleID, closest.parking.lat, closest.parking.lng).then((data) => { updateCarPosition(data); });
+		await changeChargeLevel(car.vehicleID, car.charge - (closest.distance / 3));
+		//! we don't need this here as we can leave, as battery is not critical
 		// await setServiceBlockingState(car.vehicleID); 
-		//! we don't need this here as we can leave
 	}, closest.duration);
 }
 
@@ -147,9 +177,9 @@ async function getChargingStationInfos(car)
 
 		const info = {
 			distance : res.distance,
-			time : res.duration,
+			duration : res.duration,
 			lat : chargingStation.lat,
-			long : chargingStation.lng,
+			lng : chargingStation.lng,
 		};
 
 		// console.log("info: ", info);

@@ -105,7 +105,7 @@ function generateCars(cars)
 				color : "#ffffff",
 				fontSize : "18px",
 			},
-			title : `Car No. ${i + 1}`,
+			title : `Car ${ cars[i].vehicleID}`,
 			ID : cars[i].vehicleID
 		});
 		marker.addListener("click", () => {

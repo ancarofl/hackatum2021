@@ -10,6 +10,21 @@ async function getCars() {
 		.then((response) => response.json())
 		.then((data) => {
 			result = data;
+
+			console.log(Array.isArray(data));
+		});
+
+	return result;
+}
+
+async function getCarsFromTo(from, to) {
+	var result = null;
+
+	await fetch(baseUrl1 + "vehicles")
+		.then((response) => response.json())
+		.then((data) => {
+			result = data;
+			result = result.slice(from, to);
 		});
 
 	return result;

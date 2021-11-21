@@ -58,6 +58,29 @@ function generateTestMarkers()
 			infoWindow.open(marker.getMap(), marker);
 		});
 	}
+}
 
-	// computeParkingPoIScore(parkings_TEST, pointsOfInterest_TEST);
+async function getCars_TEST()
+{
+	cars = await getCars();
+	console.log(Array.isArray(cars));
+	console.log("cars: ", cars);
+
+	// var cars_sliced = cars.slice(10, 17); //will contain ['a', 'b', 'c']
+	cars_sliced = await getCarsFromTo(10, 17);
+	console.log("cars_sliced: ", cars_sliced);
+}
+
+async function changeChargeLvl_TEST()
+{
+	await changeChargeLevel("P8rxsLelg4O9UYRmO2WW", 42);
+	// console.log(Array.isArray(cars));
+	// console.log("cars: ", cars);
+
+	// var cars_sliced = cars.slice(10, 17); //will contain ['a', 'b', 'c']
+	// cars_sliced = await getCarsFromTo(10, 17);
+	// console.log("cars_sliced: ", cars_sliced);
+
+	car = await getCar("P8rxsLelg4O9UYRmO2WW");
+	console.log("car.charge: ", car.charge);
 }

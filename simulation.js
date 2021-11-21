@@ -49,7 +49,8 @@ async function startSimulation() {
 	//console.log("Starting sim with " + carNumber + " cars and " + bookingNumber + " bookings.");
 	console.log("Starting sim with " + bookingNumber + " bookings.");
 
-	cars = await getCars()
+	// cars = await getCars();
+	cars = await getCarsFromTo(10, 17);
 	generateCars(cars);
 
 	for (var i = 0; i < bookingNumber; i++) {
@@ -64,7 +65,7 @@ async function startSimulation() {
 
 
 async function assignLowestPassengerWaitTimeCar(olat, olng, dlat, dlng) {
-	cars = await getCars()
+	cars = await getCarsFromTo(10, 17);
 	// console.log("Cars: ", cars);
 
 	bookings = await getBookings();
@@ -187,7 +188,32 @@ async function assignLowestPassengerWaitTimeCar(olat, olng, dlat, dlng) {
 				}
 			}
 		} else if (car.status === "SERVICE_BLOCK") {
-			console.log("SERVICE BLOCK NOT IMPLEMENTED YET.");
+			// console.log("SERVICE BLOCK NOT IMPLEMENTED YET.");
+
+			carToPassengerTrip = { duration: 0, distance: 0 };
+
+			// If car FREE, car to passenger = current car location to requested trip origin
+			var idleCarToPassengerTrip = await getTravelDistanceAndDuration(car.lat, car.lng, dlat, dlng);
+			carToPassengerTrip = idleCarToPassengerTrip;
+
+			// console.log("FREE CAR");
+
+			/* 2.1.4.2. */
+			var totalCarTravelDistanceNeeded =
+				carToPassengerTrip.distance +
+				requestedTrip.distance +
+				SAFETY_BATTERY_TRAVEL_DISTANCE;
+
+			/* 2.1.5 */
+			if (isBatteryEnoughForDistance(car, totalCarTravelDistanceNeeded)) {
+				let potentialCarInfo = {
+					vehicleID: car.vehicleID,
+					carToPassengerDuration: carToPassengerTrip.duration,
+					emptyTime: carToPassengerTrip.duration,
+					emptyDist: carToPassengerTrip.distance,
+				};
+				timesToPassengerArray.push(potentialCarInfo);
+			}
 		}
 	}
 
@@ -201,6 +227,10 @@ async function assignLowestPassengerWaitTimeCar(olat, olng, dlat, dlng) {
 		var carId = timesToPassengerArray[0].vehicleID;
 
 		var car = await getCar(carId);
+
+		if(car.status === "SERVICE_BLOCK"){
+			await setServiceUnBlockingState(car.vehicleID);
+		}
 
 		console.log("Times to passenger array ", timesToPassengerArray);
 
@@ -256,6 +286,7 @@ async function createLocalAndDBBooking(requestedTrip, car, distance, olat, olng,
 		updateCarPosition(updatedCar);
 
 		await findParkingSpot(car.vehicleID);
+		await changeChargeLevel(car.vehicleID, car.charge - (bookingObject.tripDistance / 3));
 
 	}, (timeFromNowTillstart + requestedJourneyDuration));
 

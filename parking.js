@@ -10,10 +10,9 @@ async function findParkingSpot(carID)
 	// // TODO: remove me
 	// generateCars(cars);
 
-	// 1. first we need to check for the closest charging Station
-	console.log("car.charge: ", car.charge);
-	console.log("car.lng: ", car.lng);
-	console.log("car.lat: ", car.lat);
+	// console.log("car.charge: ", car.charge);
+	// console.log("car.lng: ", car.lng);
+	// console.log("car.lat: ", car.lat);
 
 	// if battery is less than 20 we have to look for a charging station
 	const chargingStationsInfo = await getChargingStationInfos(car);
@@ -133,8 +132,8 @@ async function getChargingStationInfos(car)
 		// console.log(keys);
 		// console.log(chargingStation.proximityToPoI);
 
-		console.log("car.lng: ", car.lng);
-		console.log("car.lat: ", car.lat);
+		// console.log("car.lng: ", car.lng);
+		// console.log("car.lat: ", car.lat);
 
 		const res = await getTravelDistanceAndDuration(car.lat, car.lng, chargingStation.lat, chargingStation.lng);
 
@@ -148,7 +147,7 @@ async function getChargingStationInfos(car)
 			long : chargingStation.lng,
 		};
 
-		console.log("info: ", info);
+		// console.log("info: ", info);
 		chargingStationsInfo.push(info);
 	}
 	chargingStationsInfo.sort((a, b) => (a.distance > b.distance ? 1 : -1));

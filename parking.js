@@ -5,21 +5,21 @@
 //   }
 // }
 
-async function getCar2(carID) {
-	return fetch("https://us-central1-sixt-hackatum-2021.cloudfunctions.net/api/vehicles/" + carID)
-		.then((response) => response.json())
-		.then((data) => {
-			console.log("Car: ", data);
-			return JSON.parse(JSON.stringify(data));
-		});
-}
+// async function getCar2(carID) {
+// 	return fetch("https://us-central1-sixt-hackatum-2021.cloudfunctions.net/api/vehicles/" + carID)
+// 		.then((response) => response.json())
+// 		.then((data) => {
+// 			console.log("Car: ", data);
+// 			return JSON.parse(JSON.stringify(data));
+// 		});
+// }
 
 //TODO: use getCar from apis/sixtApi.js
-async function findParkingSpot(/* carID */) {
+async function findParkingSpot(carIDreal) {
 	// get car data from API using carID
 	// let car = new Car(lat, long);
 	var carID = "77ADiv9eITdsFPv2VnF9";
-	const car = await this.getCar2(carID); // command waits until completion
+	const car = await getCar(carID); // command waits until completion
 
 	// 1. first we need to check for the closest charging Station
 	console.log(car.charge);
@@ -91,7 +91,7 @@ async function getChargingStationInfos(car) {
 		// console.log("chargingStation.position.lat(): ", chargingStation.position.lat());
 		// console.log("chargingStation.position.lng(): ", chargingStation.position.lng());
 
-		const res = await getTripDistanceAndTime(car.lat, car.lng, chargingStation.position.lat(), chargingStation.position.lng());
+		const res = await getTravelDistanceAndDuration(car.lat, car.lng, chargingStation.position.lat(), chargingStation.position.lng());
 
 		// console.log("carToChargingStationDistance: ", res.distance);
 		// console.log("carToChargingStationDuration: ", res.duration);
@@ -108,26 +108,4 @@ async function getChargingStationInfos(car) {
 	}
 	chargingStationsInfo.sort((a, b) => (a.distance > b.distance ? 1 : -1));
 	return chargingStationsInfo;
-}
-
-async function getTripDistanceAndTime(carLat, carLong, csLat, csLong) {
-	var result = null;
-
-	console.log("carLat: ", carLat);
-	console.log("carLong: ", carLong);
-	console.log("csLat: ", csLat);
-	console.log("csLong: ", csLong);
-
-	await fetch("https://router.hereapi.com/v8/routes?transportMode=car&origin=" + carLat + "," + carLong + "&destination=" + csLat + "," +
-				csLong + "&return=summary&apiKey=" + HERE_API_KEY)
-				.then((response) => response.json())
-				.then((data) => {
-					console.log("Trip info: ", data);
-					result = {
-						duration : data.routes[0].sections[0].summary.duration,
-						distance : data.routes[0].sections[0].summary.length,
-					};
-				});
-
-	return result;
 }

@@ -1,20 +1,3 @@
-// class Car {
-//   constructor(lat, long) {
-//     this.lat = lat;
-//     this.long = long;
-//   }
-// }
-
-// async function getCar2(carID) {
-// 	return fetch("https://us-central1-sixt-hackatum-2021.cloudfunctions.net/api/vehicles/" + carID)
-// 		.then((response) => response.json())
-// 		.then((data) => {
-// 			console.log("Car: ", data);
-// 			return JSON.parse(JSON.stringify(data));
-// 		});
-// }
-
-// TODO: use getCar from apis/sixtApi.js
 async function findParkingSpot(carID)
 {
 	// get car data from API using carID

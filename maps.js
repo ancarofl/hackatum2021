@@ -172,8 +172,8 @@ function initMap()
 
 	let numSixtLocations = 2;
 	let numChargingStations = 3;
-	let noOfCars = 3;
-	let noOfFreeParkings = 1;
+	// let noOfCars = 3;
+	let noOfFreeParkings = 3;
 	let noOfPointsOfInterest = 1;
 
 	// var numSixtLocations = document.getElementById('numSixtLocations').value;

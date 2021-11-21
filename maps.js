@@ -92,7 +92,7 @@ function generateCars(cars)
 
 	for (let i = 0; i < cars.length; i++) {
 		const marker = new google.maps.Marker({
-			position : getLocation(MUNICH_CENTRE_LAT, MUNICH_CENTRE_LNG, RADIUS),
+			position : {lat: cars.lat, lng: cars.lng},
 			map,
 			label : {
 				text : "\ue62c",
@@ -101,7 +101,7 @@ function generateCars(cars)
 				fontSize : "18px",
 			},
 			title : `Car No. ${i + 1}`,
-			ID : markers.length
+			ID : car.vehicleID
 		});
 		marker.addListener("click", () => {
 			infoWindow.close();
@@ -110,9 +110,8 @@ function generateCars(cars)
 		});
 		markers.push(marker);
 
-		carsOnMap.push({lat : marker.position.lat(), lng : marker.position.lng(), ID : marker.ID});
+		carsOnMap.push({lat : marker.position.lat(), lng : marker.position.lng(), ID : car.vehicleID});
 	}
-	return carsOnMap;
 }
 
 let freeParkings = [];

@@ -218,9 +218,9 @@ async function createLocalAndDBBooking(requestedTrip, car, distance) {
 	setTimeout(async function () {
 		await updateCarCoords(car.vehicleID, 48.1374796958508, 11.412401703683802).then((data) => {
 			updateCarPosition(data);
+			// findParkingSpot(car.vehicleID);
 		});
 
-		// findParkingSpot(car.vehicleID);
 	}, duration);
 
 }

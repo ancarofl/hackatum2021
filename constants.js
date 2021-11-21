@@ -21,6 +21,11 @@ const SCORE_b = 0.2;
 const SCORE_c = 0.3;
 
 //Divider to modify time duration from the UI
-// const TIME_DIVIDER = 500.0
+const TIME_DIVIDER = 1000;
 
-const TIME_DIVIDER = 200.0
+/* Simulation */
+const MIN_CARS = 1;
+const MAX_CARS = 38;
+
+const MIN_BOOKINGS = 1;
+const MAX_BOOKINGS = 500;

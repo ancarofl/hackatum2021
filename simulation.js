@@ -1,25 +1,7 @@
-// For testing assign lat/lng pairs that we know work so we don't have to fill in the 'form'
-// Otherwise we get a 400 Malformed request, cause: 'Error while parsing request: \n\n\tInvalid location specification at ','\n\tInvalid
-// waypoint at ','\n\tUnexpected input at ','\n\tInvalid value for parameter 'origin' at ',''. The form should later be changed to work with
-// address instead of lat/lng.
-
-// TUM coords
-var olat = MUNICH_TUM_LAT;
-var olng = MUNICH_TUM_LNG;
-
-// UvA coords
-// var dlat = 52.35632784585438;
-// var dlng = 4.971252886117597;
-
-// Munich Airport coords
-var dlat = MUNICH_AIRPORT_LAT;
-var dlng = MUNICH_AIRPORT_LNG;
-
-// For reference
-// Using HERE
-// https://wego.here.com/directions/mix/Munich-Airport,-Terminalstra%C3%9Fe-West,-85356-Oberding:276u287h-33978e49adeb4b2fa026780cb8d88bef/Technische-Universit%C3%A4t-M%C3%BCnchen,-Arcisstra%C3%9Fe-21,-80333-Munich:276u281z-68ca4dc5f40c475e8f5d5793dcec32b9?map=48.25352,11.67727,12,normal
-// Using Google
-// https://www.google.com/maps/dir/Munich+Airport,+M%C3%BCnchen-Flughafen,+Germany/Technische+Universit%C3%A4t+M%C3%BCnchen,+Arcisstra%C3%9Fe+21,+80333+M%C3%BCnchen,+Germany/@48.2531166,11.5341618,11z/data=!3m1!4b1!4m14!4m13!1m5!1m1!1s0x479e13dfa898f107:0xcb3789d757b96c43!2m2!1d11.7862396!2d48.3527322!1m5!1m1!1s0x479e7261336d8c11:0x79a04d44dc5bf19d!2m2!1d11.5678602!2d48.14966!3e0
+// SIM LOCAL OBJECTS
+var bookingsList = new Bookings();
+bookingsList.onBookingAdded.push((newBooking) => checkProximityOfBookingToOtherPointsOfInterest(newBooking));
+bookingsList.onBookingsChanged.push((newBookingsList) => console.log("New bookings list: ", newBookingsList));
 
 var cars = null;
 var bookings = null;
@@ -27,19 +9,63 @@ var bookings = null;
 var timesToPassengerArray = [];
 var localBookingsArray = [];
 
-/*function callTaxi() {
-	console.log("Call taxi!");
-}*/
+async function startSimulation() {
+	/*let carNumber = null;
+	carNumber = document.getElementById("car_number").value;*/
 
+	let bookingNumber = null;
+	bookingNumber = document.getElementById("booking_number").value;
 
+	// "Validation"
+	/*if (!carNumber) {
+		text = "A car number is required to run the simulation.";
+		document.getElementById("car_number_error").innerHTML = text;
 
+		return;
+	} else if (carNumber < MIN_CARS || carNumber > MAX_CARS) {
+		text = "The car number must be between " + MIN_CARS + " and " + MAX_CARS + ".";
+		document.getElementById("car_number_error").innerHTML = text;
 
+		return;
+	} else {
+		text = "";
+		document.getElementById("car_number_error").innerHTML = text;
+	}*/
 
-async function assignLowestPassengerWaitTimeCar() {
+	if (!bookingNumber) {
+		text = "A booking number is required to run the simulation.";
+		document.getElementById("booking_number_error").innerHTML = text;
+
+		return;
+	} else if (bookingNumber < MIN_BOOKINGS || bookingNumber > MAX_BOOKINGS) {
+		text = "The booking number must be between " + MIN_BOOKINGS + " and " + MAX_BOOKINGS + ".";
+		document.getElementById("booking_number_error").innerHTML = text;
+		return;
+	} else {
+		text = "";
+		document.getElementById("booking_number_error").innerHTML = text;
+	}
+
+	//console.log("Starting sim with " + carNumber + " cars and " + bookingNumber + " bookings.");
+	console.log("Starting sim with " + bookingNumber + " bookings.");
+
 	cars = await getCars()
 	generateCars(cars);
 
-	console.log("Cars: ", cars);
+	for (var i = 0; i < bookingNumber; i++) {
+		generateRealRandomBooking();
+	}
+
+	for (const b of bookingsList.BookingsList) {
+		assignLowestPassengerWaitTimeCar(b.olat, b.olng, b.dlat, b.dlng);
+	}
+}
+
+
+
+async function assignLowestPassengerWaitTimeCar(olat, olng, dlat, dlng) {
+	cars = await getCars()
+	// console.log("Cars: ", cars);
 
 	bookings = await getBookings();
 	// console.log("Bookings: ", bookings);
@@ -81,12 +107,7 @@ async function assignLowestPassengerWaitTimeCar() {
 	requestedTrip = await getTravelDistanceAndDuration(olat, olng, dlat, dlng);
 	// console.log("Requested trip: ", requestedTrip);
 
-	// To do less requests for now pretend car fleet = 6 cars.
-	var iterations = 0;
 	for (const car of cars) {
-		if (iterations >= 6) break;
-		iterations++;
-
 		var carToPassengerTrip = { duration: 0, distance: 0 };
 
 		// console.log("Car " + car.vehicleID + "status: " + car.status);
@@ -186,19 +207,19 @@ async function assignLowestPassengerWaitTimeCar() {
 		timeTravelledEmpty += timesToPassengerArray[0].emptyTime;
 		distanceTravelledEmpty += timesToPassengerArray[0].emptyDist;
 
-		createLocalAndDBBooking(requestedTrip, car, (carToPassengerTrip.distance + requestedTrip.distance));
+		createLocalAndDBBooking(requestedTrip, car, (carToPassengerTrip.distance + requestedTrip.distance), olat, olng, dlat, dlng);
 		console.log("Assignment done. Car ", carId, " will arrive to the passenger in ", timesToPassengerArray[0].carToPassengerDuration, " seconds aka ", timesToPassengerArray[0].carToPassengerDuration / 60, " minutes, then the trip from TUM to the airport will take ", requestedTrip.duration / 60, " minutes!!!");
 	} else {
 		console.log("Oh no no no, no cars available.");
 	}
 }
 
-async function createLocalAndDBBooking(requestedTrip, car, distance) {
+async function createLocalAndDBBooking(requestedTrip, car, distance, olat, olng, dlat, dlng) {
 	console.log("Booking car " + car.vehicleID + ".");
 
 	var bookingId = await createBooking(olat, olng, dlat, dlng);
-	console.log("Test:", bookingId);
-	assignCarToBooking(bookingId, car.vehicleID);
+	// console.log("Test:", bookingId);
+	await assignCarToBooking(bookingId, car.vehicleID);
 
 	var bookingObject = {
 		id: bookingId,
@@ -213,20 +234,46 @@ async function createLocalAndDBBooking(requestedTrip, car, distance) {
 	localBookingsArray.push(bookingObject);
 	console.log("Local bookings: ", localBookingsArray);
 
-	var duration = (bookingObject.tripEndTime - Date.now()) / 1000;
-	console.log("QWERTY", duration);
+	var requestedJourneyDuration = (bookingObject.tripEndTime - Date.now()) / TIME_DIVIDER;
+	var timeFromNowTillstart = (bookingObject.tripStartTime - Date.now()) / TIME_DIVIDER;
 
+	// After the time between now and tripStartTime has elapsed, assume the onboarding was super efficient and the passenger got on.
+
+	console.log("ANCANCANCA", timeFromNowTillstart);
 	setTimeout(async function () {
-		await updateCarCoords(car.vehicleID, 48.1374796958508, 11.412401703683802).then((data) => {
-			updateCarPosition(data);
-			findParkingSpot(car.vehicleID);
-		});
+		await startTrip(bookingObject.id);
 
-	}, duration);
+	}, timeFromNowTillstart);
+
+	// After the time between now and tripStartTime has elapsed, assume everything was super smooth, add trip calculated duration, and end trip + update car coords;
+	setTimeout(async function () {
+		await endTrip(bookingObject.id);
+		await updateCarCoords(car.vehicleID, dlat, dlng);
+		var updatedCar = await getCar(car.vehicleID);
+
+		console.log("Hey bro ", updatedCar);
+
+		updateCarPosition(updatedCar);
+
+		await findParkingSpot(car.vehicleID);
+
+	}, (timeFromNowTillstart + requestedJourneyDuration));
 
 }
 
 /* DEBUG/TEST FUNCTIONS */
+async function consoleLogCars() {
+	cars = await getCars()
+	console.log("Cars: ", cars);
+}
+
+async function consoleLogCar() {
+	var carId = document.getElementById("car_id").value;
+	if (!carId) return;
+
+	var car = await getCar(carId);
+	console.log("Car: ", car);
+}
 
 async function endAllActiveBookings() {
 	console.log("Ending all VEHICLE_ASSIGNED bookings thus making the cars FREE again (YEY FOR INDEPENDENCE).");

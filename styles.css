@@ -5,7 +5,9 @@
 }
 
 /* Sim UI CSS */
-.sim-ui {
+.error {
+	color: red;
+	font-size: 14px;
 }
 
 /* Maps CSS */

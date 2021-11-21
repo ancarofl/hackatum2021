@@ -19,7 +19,8 @@ async function findParkingSpot(carID)
 	if (car.charge <= SAFETY_BATTERY_PERCENTAGE) {
 		console.log("Battery low. Car: ", carID, " will go ", chargingStationsInfo[0].distance / 1000.0, " km to charging station at (",
 					chargingStationsInfo[0].lat, ", ", chargingStationsInfo[0].long, ") ");
-		await setServiceBlockingState(car.vehicleID);
+
+		setTimeout(async function() { await setServiceBlockingState(car.vehicleID); }, chargingStationsInfo[0].duration);
 		return;
 	}
 
@@ -51,8 +52,9 @@ async function findParkingSpot(carID)
 		distanceTravelledEmpty += closest.distance;
 		timeTravelledEmpty += closest.duration;
 
-		await updateCarCoords(car.vehicleID, closest.parking.lat, closest.parking.lng).then((data) => { updateCarPosition(data); });
-
+		setTimeout(async function() {
+			await updateCarCoords(car.vehicleID, closest.parking.lat, closest.parking.lng).then((data) => { updateCarPosition(data); });
+		}, closest.duration);
 		return;
 	}
 
@@ -83,8 +85,11 @@ async function findParkingSpot(carID)
 	distanceTravelledEmpty += closest.distance;
 	timeTravelledEmpty += closest.duration;
 
-	await updateCarCoords(car.vehicleID, closest.parking.lat, closest.parking.lng).then((data) => { updateCarPosition(data); });
-	await setServiceBlockingState(car.vehicleID);
+	setTimeout(async function() {
+		await updateCarCoords(car.vehicleID, closest.parking.lat, closest.parking.lng).then((data) => { updateCarPosition(data); });
+		// await setServiceBlockingState(car.vehicleID); 
+		//! we don't need this here as we can leave
+	}, closest.duration);
 }
 
 async function resetPositionForTest()

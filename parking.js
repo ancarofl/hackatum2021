@@ -15,17 +15,17 @@
 // }
 
 // TODO: use getCar from apis/sixtApi.js
-async function findParkingSpot(carIDreal)
+async function findParkingSpot(carID)
 {
 	// get car data from API using carID
 	// let car = new Car(lat, long);
-	var carID = "znNi2b9aAn0YMxFeEqC8";
+	// var carID = "znNi2b9aAn0YMxFeEqC8";
 	const car = await getCar(carID); // command waits until completion
 
-	let cars = [];
-	cars.push(car);
-	// TODO: remove me
-	generateCars(cars);
+	// let cars = [];
+	// cars.push(car);
+	// // TODO: remove me
+	// generateCars(cars);
 
 	// 1. first we need to check for the closest charging Station
 	console.log("car.charge: ", car.charge);
@@ -37,21 +37,49 @@ async function findParkingSpot(carIDreal)
 	if (car.charge <= SAFETY_BATTERY_PERCENTAGE) {
 		console.log("Battery low. Car: ", carID, " will go ", chargingStationsInfo[0].distance / 1000.0, " km to charging station at (",
 					chargingStationsInfo[0].lat, ", ", chargingStationsInfo[0].long, ") ");
+		await setServiceBlockingState(car.vehicleID);
 		return;
 	}
 
-	// 2. then if the battery is more than enough (20%, which corresponds to 60km, we look for the taxi parking)
+	// if the battery is more than enough (20%, which corresponds to 60km, we look for the taxi parking)
 	if (car.charge >= UPPER_SAFETY_BATTERY_PERCENTAGE) {
-		console.log("look for free or sixt parking");
-		// TODO: take again proximity to either free parking or sixt parking;
+		console.log("Battery more than enough.Looking for free or sixt parking...");
+		let freeAndSixtParkings = [...freeParkings, ...sixtParkings];
+		// let freeAndSixtParkings_TEST = [...parkings_TEST ];
+		let freeAndSixtParkingsRes = [];
+		for (parking of freeAndSixtParkings) {
+			var res = await getTravelDistanceAndDuration(car.lat, car.lng, parking.lat, parking.lng);
+			// distance = res.distance;
+			// duration = res.duration;
+
+			// console.log("res.distance: ", res.distance);
+			// console.log("res.duration: ", res.duration);
+
+	
+			// console.log("distance: ", distance);
+			// console.log("SCORE_a * (500000/distance): ", SCORE_a * (500000.0/distance));
+			// console.log("SCORE_b * parking.type: ", SCORE_b * parking.type);
+			// console.log("SCORE_c * parking.proximityToPoI / (distance/1000) * 15:", SCORE_c * parking.proximityToPoI / (distance/10000)) *
+			// 15;
+	
+			freeAndSixtParkingsRes.push({parking : parking, distance : res.distance, duration: res.duration});
+		}
+		const closest = freeAndSixtParkingsRes.reduce((acc, loc) => acc.distance < loc.distance ? acc : loc);
+
+		distanceTravelledEmpty += closest.distance;
+		timeTravelledEmpty += closest.duration;
+
+		await updateCarCoords(car.vehicleID, closest.parking.lat, closest.parking.lng).then((data) => { updateCarPosition(data); });
+
 		return;
 	}
 
 	// compute score to find best parking among free parkings, Sixt parkings or Charging Stations and go to parking based on score
 	await computeParkingPoIScore();
-	let parkings = [...parkings_TEST ];
+	// let testParkings = [...parkings_TEST ];
+	let allParkings = [...freeParkings, ...sixtParkings, ...chargingStations];
 	let arr = [];
-	for (parking of parkings) {
+	for (parking of allParkings) {
 		var res = await getTravelDistanceAndDuration(car.lat, car.lng, parking.lat, parking.lng);
 		distance = res.distance;
 
@@ -65,12 +93,16 @@ async function findParkingSpot(carIDreal)
 					SCORE_a * (1800000.0 / distance) + SCORE_b * parking.type + SCORE_c * parking.proximityToPoI / (distance / 10000) * 15;
 		// console.log("parking id:", parking.ID, "score: ", score);
 
-		arr.push({parking : parking, score : score});
+		arr.push({parking : parking, score : score, distance : res.distance, duration: res.duration});
 	}
 	const closest = arr.reduce((acc, loc) => acc.score > loc.score ? acc : loc);
 	// console.log("car: ", carID, "chooses parking place: ", closest.parking.ID);
 
+	distanceTravelledEmpty += closest.distance;
+	timeTravelledEmpty += closest.duration;
+
 	await updateCarCoords(car.vehicleID, closest.parking.lat, closest.parking.lng).then((data) => { updateCarPosition(data); });
+	await setServiceBlockingState(car.vehicleID);
 }
 
 async function resetPositionForTest()
@@ -80,11 +112,15 @@ async function resetPositionForTest()
 	});
 }
 
+async function resetToMaximumChargeForTest() { await changeChargeLevel("znNi2b9aAn0YMxFeEqC8", 95); }
+async function resetToMinimumChargeForTest() { await changeChargeLevel("znNi2b9aAn0YMxFeEqC8", 5); }
+async function resetToMediumChargeForTest() { await changeChargeLevel("znNi2b9aAn0YMxFeEqC8", 50); }
+
 async function computeParkingPoIScore(/* parkings, pointsOfInterest */)
 {
-	// let parkings = [...freeParkings, ...sixtParkings, ...chargingStations];
-	let parkings = [...parkings_TEST ];
-	let pointsOfInterest = [...pointsOfInterest_TEST ];
+	let parkings = [...freeParkings, ...sixtParkings, ...chargingStations];
+	// let parkings = [...parkings_TEST ];
+	// let pointsOfInterest = [...pointsOfInterest_TEST ];
 
 	for (parking of parkings) {
 		parking.proximityToPoI = 0;
@@ -110,14 +146,14 @@ async function getChargingStationInfos(car)
 
 	// must look for charging station; Pick the closest one by distance;
 	for (chargingStation of chargingStations) {
-		var keys = Object.keys(chargingStation);
-		console.log(keys);
+		// var keys = Object.keys(chargingStation);
+		// console.log(keys);
+		// console.log(chargingStation.proximityToPoI);
 
-		console.log(chargingStation.proximityToPoI);
-		// console.log("chargingStation.position.lat(): ", chargingStation.position.lat());
-		// console.log("chargingStation.position.lng(): ", chargingStation.position.lng());
+		console.log("car.lng: ", car.lng);
+		console.log("car.lat: ", car.lat);
 
-		const res = await getTravelDistanceAndDuration(car.lat, car.lng, chargingStation.position.lat(), chargingStation.position.lng());
+		const res = await getTravelDistanceAndDuration(car.lat, car.lng, chargingStation.lat, chargingStation.lng);
 
 		// console.log("carToChargingStationDistance: ", res.distance);
 		// console.log("carToChargingStationDuration: ", res.duration);
@@ -125,8 +161,8 @@ async function getChargingStationInfos(car)
 		const info = {
 			distance : res.distance,
 			time : res.duration,
-			lat : chargingStation.position.lat(),
-			long : chargingStation.position.lng(),
+			lat : chargingStation.lat,
+			long : chargingStation.lng,
 		};
 
 		console.log("info: ", info);

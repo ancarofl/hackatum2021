@@ -180,10 +180,10 @@ function initMap()
 	// var numChargingStations = document.getElementById('numChargingStations').value;
 	// var noOfCars = document.getElementById('noOfCars').value;
 
-	// generateChargingStations(numChargingStations);
-	// generateSixtParkingLocations(numSixtLocations);
-	// generateFreeParkings(noOfFreeParkings);
-	// generatePointsOfInterest(noOfPointsOfInterest);
+	generateChargingStations(numChargingStations);
+	generateSixtParkingLocations(numSixtLocations);
+	generateFreeParkings(noOfFreeParkings);
+	generatePointsOfInterest(noOfPointsOfInterest);
 
-	generateTestMarkers();
+	// generateTestMarkers();
 }

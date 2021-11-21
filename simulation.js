@@ -219,7 +219,7 @@ async function createLocalAndDBBooking(requestedTrip, car, distance) {
 	setTimeout(async function () {
 		await updateCarCoords(car.vehicleID, 48.1374796958508, 11.412401703683802).then((data) => {
 			updateCarPosition(data);
-			// findParkingSpot(car.vehicleID);
+			findParkingSpot(car.vehicleID);
 		});
 
 	}, duration);
@@ -230,6 +230,8 @@ async function createLocalAndDBBooking(requestedTrip, car, distance) {
 
 async function endAllActiveBookings() {
 	console.log("Ending all VEHICLE_ASSIGNED bookings thus making the cars FREE again (YEY FOR INDEPENDENCE).");
+
+	bookings = await getBookings();
 	for (const booking of bookings) {
 		if (booking.status === "VEHICLE_ASSIGNED") {
 			// console.log("Vehicle assigned booking: ", booking);

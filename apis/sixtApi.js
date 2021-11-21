@@ -124,6 +124,48 @@ async function endTrip(bookingId) {
 		}
 	}).then((response) => response.json())
 		.then((data) => {
-			// console.log("startTrip response: ", data);
+			// console.log("endTrip response: ", data);
 		});
 }
+
+async function changeChargeLevel(carID, chargeLevel) {
+	const chargeBody = {
+		"charge": chargeLevel
+	};
+
+	await fetch(baseUrl1 + "vehicles/" + carID + "/charge", {
+		method: "POST",
+		body: JSON.stringify(chargeBody),
+		headers: {
+			"Content-Type": "application/json"
+		}
+	}).then((response) => response.json())
+		.then((data) => {
+			// console.log("changeChargeLevel response: ", data);
+		});
+}
+
+async function setServiceBlockingState(carId){
+	await fetch(baseUrl1 + "vehicles/" + carID + "/block", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json"
+		}
+	}).then((response) => response.json())
+		.then((data) => {
+			// console.log("setServiceBlockingState response: ", data);
+		});
+}
+
+async function setServiceUnBlockingState(carId){
+	await fetch(baseUrl1 + "vehicles/" + carID + "/unblock", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json"
+		}
+	}).then((response) => response.json())
+		.then((data) => {
+			// console.log("setServiceUnBlockingState response: ", data);
+		});
+}
+

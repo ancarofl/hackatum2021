@@ -9,6 +9,9 @@ var bookings = null;
 var timesToPassengerArray = [];
 var localBookingsArray = [];
 
+var fromCar = 10;
+var toCar = 17;
+
 async function startSimulation() {
 	/*let carNumber = null;
 	carNumber = document.getElementById("car_number").value;*/
@@ -46,6 +49,10 @@ async function startSimulation() {
 		document.getElementById("booking_number_error").innerHTML = text;
 	}
 
+	fromCar = document.getElementById("start_car_number").value;
+	toCar = (Number)(fromCar) + (Number)(document.getElementById("car_number").value);
+	console.log("From car ", fromCar, " to ", toCar);
+
 	//console.log("Starting sim with " + carNumber + " cars and " + bookingNumber + " bookings.");
 	console.log("Starting sim with " + bookingNumber + " bookings.");
 
@@ -60,17 +67,19 @@ async function startSimulation() {
 	for (const b of bookingsList.BookingsList) {
 		assignLowestPassengerWaitTimeCar(b.olat, b.olng, b.dlat, b.dlng);
 	}
+
+	bookings = await getBookings();
+	// console.log("Bookings: ", bookings);
 }
 
 
 
 async function assignLowestPassengerWaitTimeCar(olat, olng, dlat, dlng) {
-	cars = await getCarsFromTo(10, 17);
+	cars = await getCarsFromTo(fromCar, toCar);
 	generateCars(cars);
 	// console.log("Cars: ", cars);
 
-	bookings = await getBookings();
-	// console.log("Bookings: ", bookings);
+
 
 	timesToPassengerArray = [];
 
@@ -229,7 +238,7 @@ async function assignLowestPassengerWaitTimeCar(olat, olng, dlat, dlng) {
 
 		var car = await getCar(carId);
 
-		if(car.status === "SERVICE_BLOCK"){
+		if (car.status === "SERVICE_BLOCK") {
 			await setServiceUnBlockingState(car.vehicleID);
 		}
 
@@ -240,8 +249,8 @@ async function assignLowestPassengerWaitTimeCar(olat, olng, dlat, dlng) {
 
 		createLocalAndDBBooking(requestedTrip, car, (carToPassengerTrip.distance + requestedTrip.distance), olat, olng, dlat, dlng);
 		console.log("Assignment done. Car ", carId, " will arrive to the passenger in ", timesToPassengerArray[0].carToPassengerDuration,
-					" seconds aka ", timesToPassengerArray[0].carToPassengerDuration / 60,
-					" minutes, then the trip from (", olat, ", ", olng, ") to (", dlat, ", ", dlng, ") will take ", requestedTrip.duration / 60, " minutes!!!");
+			" seconds aka ", timesToPassengerArray[0].carToPassengerDuration / 60,
+			" minutes, then the trip from (", olat, ", ", olng, ") to (", dlat, ", ", dlng, ") will take ", requestedTrip.duration / 60, " minutes!!!");
 	} else {
 		console.log("Oh no no no, no cars available.");
 	}
@@ -322,4 +331,6 @@ async function endAllActiveBookings() {
 		}
 	}
 	localBookingsArray = [];
+
+	console.log("Finished ending all VEHICLE_ASSIGNED bookings thus making the cars FREE again (YEY FOR INDEPENDENCE).");
 }

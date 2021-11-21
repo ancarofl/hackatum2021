@@ -5,6 +5,7 @@ class Bookings
 		this.BookingsList = [];
 		this.onBookingAdded = [];
 		this.onBookingsChanged = [];
+		setTimeout(removeOldBookingsFromPoI, 5000);
 	}
 
 	addBooking(newBooking)
@@ -13,6 +14,8 @@ class Bookings
 		this.bookingAdded(newBooking);
 		this.bookingsChanged(this.BookingsList);
 	}
+
+
 
 	bookingAdded(newBooking) { this.onBookingAdded.forEach(f => f(newBooking)); }
 	bookingsChanged(BookingsList) { this.onBookingsChanged.forEach(f => f(BookingsList)); }
@@ -59,32 +62,44 @@ function checkProximityOfBooking(oLat, oLng, bLat, bLng, radius)
 		   radius;
 }
 
-function checkProximityOfBookingToCityCentre(newBooking)
+//For each point of interest bookings older than 1hr have to be removed
+function removeOldBookingsFromPoI()
 {
-	if (checkProximityOfBooking(MUNICH_CENTRE_LAT, MUNICH_CENTRE_LNG, newBooking.lat, newBooking.lng, 1000)) {
-		console.log("booking close to city centre");
-	}
-}
+	// for (pointOfInterest of pointsOfInterest) { console.log("pointOfInterest.bookings: ", pointOfInterest.bookings); }
 
-function checkProximityOfBookingToAirport(newBooking)
-{
-	if (checkProximityOfBooking(MUNICH_AIRPORT_LAT, MUNICH_AIRPORT_LNG, newBooking.lat, newBooking.lng, 1000)) {
-		console.log("booking close to airport");
+	for (pointOfInterest of pointsOfInterest) {
+		bookingsToRemove = [];
+		for (booking of pointOfInterest.bookings) {
+			// console.log("booking.timestamp + 7000: ", booking.timestamp + 7000);
+			// console.log("Date.now(): ", Date.now());
+			if (booking.timestamp + 7000 < Date.now()) { bookingsToRemove.push(booking); }
+		}
+		// console.log("bookingsToRemove: ", bookingsToRemove);
+		for (bookingToRemove of bookingsToRemove) {
+			const index = pointOfInterest.bookings.indexOf(bookingToRemove);
+			if (index > -1) { pointOfInterest.bookings.splice(index, 1); }
+		}
 	}
+
+	setTimeout(removeOldBookingsFromPoI, 5000);
+	// for (pointOfInterest of pointsOfInterest) { console.log("pointOfInterest.bookings: ", pointOfInterest.bookings); }
 }
 
 function checkProximityOfBookingToOtherPointsOfInterest(newBooking)
 {
-	for(pointOfInterest of pointsOfInterest){
+	console.log("newBooking: ", newBooking);
+	for (pointOfInterest of pointsOfInterest) {
 		if (checkProximityOfBooking(pointOfInterest.lat, pointOfInterest.lng, newBooking.lat, newBooking.lng, 1000)) {
+			if (pointOfInterest.ID == cityCentreID) { console.log("booking close to city centre"); }
+			if (pointOfInterest.ID == airportID) { console.log("booking close to airport"); }
+
 			console.log("booking close to ", pointOfInterest.ID);
 			pointOfInterest.bookings.push(newBooking);
 		}
 	}
+	// for (pointOfInterest of pointsOfInterest) { console.log("pointOfInterest.bookings: ", pointOfInterest.bookings); }
 }
 
-bookingsList.onBookingAdded.push((newBooking) => checkProximityOfBookingToCityCentre(newBooking));
-bookingsList.onBookingAdded.push((newBooking) => checkProximityOfBookingToAirport(newBooking));
 bookingsList.onBookingAdded.push((newBooking) => checkProximityOfBookingToOtherPointsOfInterest(newBooking));
 
 //! add this only if you need to get info about added bookings

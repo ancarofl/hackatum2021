@@ -1,5 +1,3 @@
-// const { time } = require("console");
-
 // class Car {
 //   constructor(lat, long) {
 //     this.lat = lat;
@@ -41,27 +39,32 @@ async function findParkingSpot(/* carID */) {
 		return;
 	}
 
+	// compute score to find best parking
+	parkings = freeParkings + sixtParkings + chargingStations;
 
-	//compute score to find best parking
+	for (parking of parkings) {
 
-	computeParkingPoIScore();
+		computeParkingPoIScore();
 
-	a = 0.5;
-	b = 0.2;
-	c = 0.3;
-	const score = a * distance + b * type + c * proximityToPoI;
+
+		const score = SCORE_a * distance + SCORE_b * type + SCORE_c * proximityToPoI;
+	}
+
+
 
 	// 3. free parking (maybe Rewe, Lidl etc.)
 
 	// 4. nearest Sixt parking
-
-	for (sixtParking of sixtParkings) { }
 
 	// 5. road side while trying to go to 3,4
 
 	/**
 	 * if battery is less than 20 we have to look for a charging station
 	 */
+}
+
+async function computeParkingPoIScore(parking) {
+
 }
 
 async function getChargingStationInfos(car) {

@@ -50,8 +50,8 @@ async function startSimulation() {
 	console.log("Starting sim with " + bookingNumber + " bookings.");
 
 	// cars = await getCars();
-	cars = await getCarsFromTo(10, 17);
-	generateCars(cars);
+	// cars = await getCarsFromTo(10, 17);
+	// generateCars(cars);
 
 	for (var i = 0; i < bookingNumber; i++) {
 		generateRealRandomBooking();
@@ -66,6 +66,7 @@ async function startSimulation() {
 
 async function assignLowestPassengerWaitTimeCar(olat, olng, dlat, dlng) {
 	cars = await getCarsFromTo(10, 17);
+	generateCars(cars);
 	// console.log("Cars: ", cars);
 
 	bookings = await getBookings();

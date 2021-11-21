@@ -1,12 +1,15 @@
-class Bookings {
-	constructor() {
+class Bookings
+{
+	constructor()
+	{
 		this.BookingsList = [];
 		this.onBookingAdded = [];
 		this.onBookingsChanged = [];
 		setTimeout(removeOldBookingsFromPoI, 5000);
 	}
 
-	addBooking(newBooking) {
+	addBooking(newBooking)
+	{
 		this.BookingsList.push(newBooking);
 		this.bookingAdded(newBooking);
 		this.bookingsChanged(this.BookingsList);
@@ -16,76 +19,88 @@ class Bookings {
 	bookingsChanged(BookingsList) { this.onBookingsChanged.forEach(f => f(BookingsList)); }
 }
 
-function generateCityCentreBooking() {
+function generateCityCentreBooking()
+{
 	pos = getLocation(MUNICH_CENTRE_LAT, MUNICH_CENTRE_LNG, 1000)
-	var bookingObject = { lat: pos.lat, lng: pos.lng, timestamp: Date.now() };
+	var bookingObject = {lat : pos.lat, lng : pos.lng, timestamp : Date.now()};
 
 	bookingsList.addBooking(bookingObject);
 }
 
-
-function generateRealCityCentreBooking() {
+async function generateRealCityCentreBooking()
+{
 	pos = getLocation(MUNICH_CENTRE_LAT, MUNICH_CENTRE_LNG, 1000)
 	pos2 = getLocation(MUNICH_CENTRE_LAT, MUNICH_CENTRE_LNG, RADIUS);
-	var bookingObject = { olat: pos.lat, olng: pos.lng, dlat: pos2.lat, dlng: pos2.lng, timestamp: Date.now() };
+	var bookingObject = {olat : pos.lat, olng : pos.lng, dlat : pos2.lat, dlng : pos2.lng, timestamp : Date.now()};
 
-	bookingsList.addBooking(bookingObject);
+	// bookingsList.addBooking(bookingObject);
+	await assignLowestPassengerWaitTimeCar(bookingObject.olat, bookingObject.olng, bookingObject.dlat, bookingObject.dlng);
 }
 
-function generateAirportBooking() {
+function generateAirportBooking()
+{
 	pos = getLocation(MUNICH_AIRPORT_LAT, MUNICH_AIRPORT_LNG, 1000)
-	var bookingObject = { lat: pos.lat, lng: pos.lng, timestamp: Date.now() };
+	var bookingObject = {lat : pos.lat, lng : pos.lng, timestamp : Date.now()};
 
 	bookingsList.addBooking(bookingObject);
 }
 
-function generateRealAirportBooking() {
+async function generateRealAirportBooking()
+{
 	pos = getLocation(MUNICH_AIRPORT_LAT, MUNICH_AIRPORT_LNG, 1000)
 	pos2 = getLocation(MUNICH_CENTRE_LAT, MUNICH_CENTRE_LNG, RADIUS);
-	var bookingObject = { olat: pos.lat, olng: pos.lng, dlat: pos2.lat, dlng: pos2.lng, timestamp: Date.now() };
+	var bookingObject = {olat : pos.lat, olng : pos.lng, dlat : pos2.lat, dlng : pos2.lng, timestamp : Date.now()};
 
-	bookingsList.addBooking(bookingObject);
+	// bookingsList.addBooking(bookingObject);
+	await assignLowestPassengerWaitTimeCar(bookingObject.olat, bookingObject.olng, bookingObject.dlat, bookingObject.dlng);
 }
 
-function generateBookingCloseToPointOfInterest(pointOfInterest) {
+function generateBookingCloseToPointOfInterest(pointOfInterest)
+{
 	pos = getLocation(pointOfInterest.lat, pointOfInterest.lng, 500)
-	var bookingObject = { lat: pos.lat, lng: pos.lng, timestamp: Date.now() };
+	var bookingObject = {lat : pos.lat, lng : pos.lng, timestamp : Date.now()};
 
 	bookingsList.addBooking(bookingObject);
 }
 
-function generateRealBookingCloseToPointOfInterest(pointOfInterest) {
+async function generateRealBookingCloseToPointOfInterest(pointOfInterest)
+{
 	pos = getLocation(pointOfInterest.lat, pointOfInterest.lng, 500)
 	pos2 = getLocation(MUNICH_CENTRE_LAT, MUNICH_CENTRE_LNG, RADIUS);
-	var bookingObject = { olat: pos.lat, olng: pos.lng, dlat: pos2.lat, dlng: pos2.lng, timestamp: Date.now() };
+	var bookingObject = {olat : pos.lat, olng : pos.lng, dlat : pos2.lat, dlng : pos2.lng, timestamp : Date.now()};
 
-	bookingsList.addBooking(bookingObject);
+	// bookingsList.addBooking(bookingObject);
+	await assignLowestPassengerWaitTimeCar(bookingObject.olat, bookingObject.olng, bookingObject.dlat, bookingObject.dlng);
 }
 
-function generateRandomBooking() {
+function generateRandomBooking()
+{
 	pos = getLocation(MUNICH_CENTRE_LAT, MUNICH_CENTRE_LNG, RADIUS)
-	var bookingObject = { lat: pos.lat, lng: pos.lng, timestamp: Date.now() };
+	var bookingObject = {lat : pos.lat, lng : pos.lng, timestamp : Date.now()};
 
 	bookingsList.addBooking(bookingObject);
 }
 
-function generateRealRandomBooking() {
+function generateRealRandomBooking()
+{
 	pos = getLocation(MUNICH_CENTRE_LAT, MUNICH_CENTRE_LNG, RADIUS);
 	pos2 = getLocation(MUNICH_CENTRE_LAT, MUNICH_CENTRE_LNG, RADIUS);
-	var bookingObject = { olat: pos.lat, olng: pos.lng, dlat: pos2.lat, dlng: pos2.lng, timestamp: Date.now() };
+	var bookingObject = {olat : pos.lat, olng : pos.lng, dlat : pos2.lat, dlng : pos2.lng, timestamp : Date.now()};
 
 	bookingsList.addBooking(bookingObject);
 }
 
-function checkProximityOfBooking(oLat, oLng, bLat, bLng, radius) {
+function checkProximityOfBooking(oLat, oLng, bLat, bLng, radius)
+{
 	return Math.acos(Math.sin(bLat * 0.0175) * Math.sin(oLat * 0.0175) +
-		Math.cos(bLat * 0.0175) * Math.cos(oLat * 0.0175) * Math.cos((oLng * 0.0175) - (bLng * 0.0175))) *
-		6371000 <=
-		radius;
+					 Math.cos(bLat * 0.0175) * Math.cos(oLat * 0.0175) * Math.cos((oLng * 0.0175) - (bLng * 0.0175))) *
+					   6371000 <=
+		   radius;
 }
 
 // For each point of interest bookings older than 1hr have to be removed
-function removeOldBookingsFromPoI() {
+function removeOldBookingsFromPoI()
+{
 	// for (pointOfInterest of pointsOfInterest) { console.log("pointOfInterest.bookings: ", pointOfInterest.bookings); }
 
 	for (pointOfInterest of pointsOfInterest) {
@@ -106,21 +121,21 @@ function removeOldBookingsFromPoI() {
 	// for (pointOfInterest of pointsOfInterest) { console.log("pointOfInterest.bookings: ", pointOfInterest.bookings); }
 }
 
-function checkProximityOfBookingToOtherPointsOfInterest(newBooking) {
+function checkProximityOfBookingToOtherPointsOfInterest(newBooking)
+{
 	console.log("newBooking: ", newBooking);
 	for (pointOfInterest of pointsOfInterest) {
 		if (checkProximityOfBooking(pointOfInterest.lat, pointOfInterest.lng, newBooking.lat, newBooking.lng, 1000)) {
 			if (pointOfInterest.ID == cityCentreID) {
-				//console.log("booking close to city centre");
+				// console.log("booking close to city centre");
 			}
 			if (pointOfInterest.ID == airportID) {
-				//console.log("booking close to airport");
+				// console.log("booking close to airport");
 			}
 
-			//console.log("booking close to ", pointOfInterest.ID);
+			// console.log("booking close to ", pointOfInterest.ID);
 			pointOfInterest.bookings.push(newBooking);
 		}
 	}
 	// for (pointOfInterest of pointsOfInterest) { console.log("pointOfInterest.bookings: ", pointOfInterest.bookings); }
 }
-

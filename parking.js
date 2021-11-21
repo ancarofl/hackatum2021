@@ -40,7 +40,7 @@ async function findParkingSpot(carID)
 
 		setTimeout(async function() {
 			await updateCarCoords(car.vehicleID, chargingStationsInfo[0].lat, chargingStationsInfo[0].lng).then((data) => { updateCarPosition(data); });
-			await changeChargeLevel(car.vehicleID, car.charge - (chargingStationsInfo[0].distance / 3));
+			await changeChargeLevel(car.vehicleID, car.charge - (chargingStationsInfo[0].distance / 3000));
 			await setServiceBlockingState(car.vehicleID);
 		}, chargingStationsInfo[0].duration);
 
@@ -81,7 +81,7 @@ async function findParkingSpot(carID)
 
 		setTimeout(async function() {
 			await updateCarCoords(car.vehicleID, closest.parking.lat, closest.parking.lng).then((data) => { updateCarPosition(data); });
-			await changeChargeLevel(car.vehicleID, car.charge - (closest.distance / 3));
+			await changeChargeLevel(car.vehicleID, car.charge - (closest.distance / 3000));
 
 		}, closest.duration);
 		return;
@@ -116,7 +116,7 @@ async function findParkingSpot(carID)
 
 	setTimeout(async function() {
 		await updateCarCoords(car.vehicleID, closest.parking.lat, closest.parking.lng).then((data) => { updateCarPosition(data); });
-		await changeChargeLevel(car.vehicleID, car.charge - (closest.distance / 3));
+		await changeChargeLevel(car.vehicleID, car.charge - (closest.distance / 3000));
 		//! we don't need this here as we can leave, as battery is not critical
 		// await setServiceBlockingState(car.vehicleID); 
 	}, closest.duration);

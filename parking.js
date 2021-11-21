@@ -18,8 +18,13 @@
 async function findParkingSpot(carIDreal) {
 	// get car data from API using carID
 	// let car = new Car(lat, long);
-	var carID = "77ADiv9eITdsFPv2VnF9";
+	var carID = "znNi2b9aAn0YMxFeEqC8";
 	const car = await getCar(carID); // command waits until completion
+
+	let cars = [];
+	cars.push(car);
+	//TODO: remove me
+	generateCars(cars);
 
 	// 1. first we need to check for the closest charging Station
 	console.log(car.charge);
@@ -44,7 +49,22 @@ async function findParkingSpot(carIDreal) {
 	// TODO: compute score to find best parking and go to parking based on score
 	computeParkingPoIScore();
 
-	for (parking of parkings) { const score = SCORE_a * distance + SCORE_b * type + SCORE_c * proximityToPoI; }
+	let parkings = [...parkings_TEST];
+	for (parking of parkings) { 
+		var res = await getTravelDistanceAndDuration(car.lat, car.lng, parking.lat, parking.lng);
+		distance = res.distance;
+
+		console.log("distance: ", distance);
+
+		console.log("SCORE_a * (20000/distance): ", SCORE_a * (500000.0/distance));
+		console.log("SCORE_b * parking.type: ", SCORE_b * parking.type);
+		console.log("SCORE_c * parking.proximityToPoI / (distance/1000): ", SCORE_c * parking.proximityToPoI / (distance/10000)) * 10;
+
+
+		const score = SCORE_a * (2000000.0/distance) + SCORE_b * parking.type + SCORE_c * parking.proximityToPoI / (distance/10000) * 10; 
+
+		console.log("parking id:", parking.ID, "score: ", score);
+	}
 
 	// 3. free parking (maybe Rewe, Lidl etc.)
 
@@ -59,7 +79,9 @@ async function findParkingSpot(carIDreal) {
 
 async function computeParkingPoIScore(/* parkings, pointsOfInterest */)
 {
-	let parkings = [...freeParkings, ...sixtParkings, ...chargingStations];
+	// let parkings = [...freeParkings, ...sixtParkings, ...chargingStations];
+	let parkings = [...parkings_TEST];
+	let pointsOfInterest = [...pointsOfInterest_TEST];
 
 	for (parking of parkings) {
 		parking.proximityToPoI = 0;
@@ -68,14 +90,14 @@ async function computeParkingPoIScore(/* parkings, pointsOfInterest */)
 			// console.log("parking.lng: ", parking.lng);
 			// console.log("pointOfInterest.lat: ", pointOfInterest.lat);
 			// console.log("pointOfInterest.lng: ", pointOfInterest.lng);
-			const res = await getTripDistanceAndTime(parking.lat, parking.lng, pointOfInterest.lat, pointOfInterest.lng);
+			const res = await getTravelDistanceAndDuration(parking.lat, parking.lng, pointOfInterest.lat, pointOfInterest.lng);
 			// console.log("Trip info: ", data);
-			console.log("res.distance: ", res.distance);
-			console.log("pointOfInterest.bookings.length: ", pointOfInterest.bookings.length);
-			parking.proximityToPoI += pointOfInterest.bookings.length * 1000 / res.distance;
+			// console.log("res.distance: ", res.distance);
+			// console.log("pointOfInterest.bookings.length: ", pointOfInterest.bookings.length);
+			parking.proximityToPoI += pointOfInterest.bookings.length * 5000 / res.distance;
 		}
 
-		console.log("parking.proximityToPoI: ", parking.proximityToPoI);
+		console.log("parking.ID: ", parking.ID, "; parking.proximityToPoI: ", parking.proximityToPoI);
 	}
 }
 

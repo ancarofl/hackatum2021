@@ -238,7 +238,9 @@ async function assignLowestPassengerWaitTimeCar(olat, olng, dlat, dlng) {
 		distanceTravelledEmpty += timesToPassengerArray[0].emptyDist;
 
 		createLocalAndDBBooking(requestedTrip, car, (carToPassengerTrip.distance + requestedTrip.distance), olat, olng, dlat, dlng);
-		console.log("Assignment done. Car ", carId, " will arrive to the passenger in ", timesToPassengerArray[0].carToPassengerDuration, " seconds aka ", timesToPassengerArray[0].carToPassengerDuration / 60, " minutes, then the trip from TUM to the airport will take ", requestedTrip.duration / 60, " minutes!!!");
+		console.log("Assignment done. Car ", carId, " will arrive to the passenger in ", timesToPassengerArray[0].carToPassengerDuration,
+					" seconds aka ", timesToPassengerArray[0].carToPassengerDuration / 60,
+					" minutes, then the trip from (", olat, ", ", olng, ") to (", dlat, ", ", dlng, ") will take ", requestedTrip.duration / 60, " minutes!!!");
 	} else {
 		console.log("Oh no no no, no cars available.");
 	}
@@ -269,7 +271,7 @@ async function createLocalAndDBBooking(requestedTrip, car, distance, olat, olng,
 
 	// After the time between now and tripStartTime has elapsed, assume the onboarding was super efficient and the passenger got on.
 
-	console.log("ANCANCANCA", timeFromNowTillstart);
+	// console.log("timeFromNowTillstart: ", timeFromNowTillstart);
 	setTimeout(async function () {
 		await startTrip(bookingObject.id);
 
@@ -281,12 +283,12 @@ async function createLocalAndDBBooking(requestedTrip, car, distance, olat, olng,
 		await updateCarCoords(car.vehicleID, dlat, dlng);
 		var updatedCar = await getCar(car.vehicleID);
 
-		console.log("Hey bro ", updatedCar);
+		// console.log("updatedCar: ", updatedCar);
 
 		updateCarPosition(updatedCar);
 
 		await findParkingSpot(car.vehicleID);
-		await changeChargeLevel(car.vehicleID, car.charge - (bookingObject.tripDistance / 3));
+		await changeChargeLevel(car.vehicleID, car.charge - (bookingObject.tripDistance / 3000));
 
 	}, (timeFromNowTillstart + requestedJourneyDuration));
 

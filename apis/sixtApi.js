@@ -28,6 +28,33 @@ async function getCar(id) {
 	return result;
 }
 
+async function updateCarCoords(id, lat, lng, car) {
+	const coords = {
+		"lat": lat,
+		"lng": lng
+	}
+
+	var result = null;
+
+	await fetch(baseUrl1 + "vehicles/" + id + "/coordinates", {
+		method: "POST",
+		body: JSON.stringify(coords),
+		headers: {
+			"Content-Type": "application/json"
+		}
+	}).then((response) => response.json())
+		.then((data) => {
+			console.log("updateCarCoords response: ", data);
+			/*result = {
+				lat: data.lat,
+				lng: data.lng
+			};*/
+			result = data;
+		});
+
+	return result;
+}
+
 async function getBookings() {
 	var result = null;
 

@@ -36,7 +36,14 @@ var localBookingsArray = [];
 
 
 async function assignLowestPassengerWaitTimeCar() {
-	cars = await getCars()
+	//cars = await getCars()
+	cars = [{
+		charge: 100,
+		lat: 48.353144657793344,
+		lng: 11.786160706625926,
+		status: "FREE",
+		vehicleID: "0BE3W0opSKUM7SMF83ML"
+	}];
 	generateCars(cars);
 
 	console.log("Cars: ", cars);
@@ -183,4 +190,52 @@ async function assignLowestPassengerWaitTimeCar() {
 	} else {
 		console.log("Oh no no no, no cars available.");
 	}
+}
+
+async function createLocalAndDBBooking(requestedTrip, car, distance) {
+	console.log("Booking car " + car.vehicleID + ".");
+
+	var bookingId = await createBooking(olat, olng, dlat, dlng);
+	console.log("Test:", bookingId);
+	assignCarToBooking(bookingId, car.vehicleID);
+
+	var bookingObject = {
+		id: bookingId,
+		vehicleID: car.vehicleID,
+		tripStartTime: Date.now() + (timesToPassengerArray[0].carToPassengerDuration * 1000),
+		tripEndTime: Date.now() + (timesToPassengerArray[0].carToPassengerDuration + requestedTrip.duration) * 1000,
+		tripEndLat: dlat,
+		tripEndLng: dlng,
+		tripDistance: requestedTrip.distance,
+		chargeAfterTrip: getCarChargeAfterTravel(car, distance)
+	};
+	localBookingsArray.push(bookingObject);
+	console.log("Local bookings: ", localBookingsArray);
+
+	var duration = (bookingObject.tripEndTime - Date.now()) / 1000;
+	console.log("QWERTY", duration);
+
+	setTimeout(async function () {
+		await updateCarCoords(car.vehicleID, 48.1374796958508, 11.412401703683802).then((data) => {
+			updateCarPosition(data);
+		});
+
+		// findParkingSpot(car.vehicleID);
+	}, duration);
+
+}
+
+/* DEBUG/TEST FUNCTIONS */
+
+async function endAllActiveBookings() {
+	console.log("Ending all VEHICLE_ASSIGNED bookings thus making the cars FREE again (YEY FOR INDEPENDENCE).");
+	for (const booking of bookings) {
+		if (booking.status === "VEHICLE_ASSIGNED") {
+			// console.log("Vehicle assigned booking: ", booking);
+
+			await startTrip(booking.bookingID);
+			await endTrip(booking.bookingID);
+		}
+	}
+	localBookingsArray = [];
 }
